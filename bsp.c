@@ -419,7 +419,7 @@ int main(int argc,char *argv[])
  {
    int fd = open(outwad,O_WRONLY | O_CREAT | O_EXCL | O_BINARY,0644);
    outfile = NULL;
-   if (fd == -1 && errno == EEXIST) {
+   if (fd == -1 && (errno == EEXIST || errno == -1)) {
 #ifdef HAVE_TMPFILE
      outfile = tmpfile();
      using_temporary_output = 1;

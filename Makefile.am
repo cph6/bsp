@@ -1,6 +1,8 @@
-# $Id: Makefile.am,v 1.5 2000/08/27 20:38:18 cph Exp $
+# $Id: Makefile.am,v 1.6 2000/08/28 12:59:12 cph Exp $
 
-SUBDIRS = test-wads
+SUBDIRS = test-wads DOS Win32
+
+EXTRA_DIST = visplane.txt
 
 bin_PROGRAMS=bsp
 
