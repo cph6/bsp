@@ -1,8 +1,9 @@
-# $Id: Makefile.am,v 1.11 2001/11/17 15:42:46 cph Exp $
+# $Id: Makefile.am,v 1.12 2002/04/05 20:11:20 cph Exp $
 
 SUBDIRS = test-wads DOS Win32
 
-EXTRA_DIST = visplane.txt README
+man_MANS = bsp.6
+EXTRA_DIST = visplane.txt README $(man_MANS)
 
 DOCS = README AUTHORS COPYING NEWS visplane.txt
 
