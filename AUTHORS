@@ -1,0 +1,25 @@
+Node builder for DOOM levels (c) 1998 Colin Reed, Lee Killough
+                             (c) 2000 Colin Phipps
+
+BSP was originally written by Colin Reed. It was based on ideas from the Doom
+specs, by Matt Fell <msfell@aol.com>, and objects.c from the DEU v5 source
+code, by Raphael Quinet <Raphael.Quinet@eed.ericsson.se>.
+
+It was later maintained by Lee Killough, who added support for some special
+effects, worked a lot on the visplanes problem, and did various optimisations.
+
+Since v5, BSP is maintained by Colin Phipps (cph@lxdoom.linuxgames.com).
+
+The following people have also contributed to the development of BSP:
+
+Mark Harrison <harrison@lclark.edu>  - for finding a bug in 1.1x
+Jan Van der Veken - finding the invisible barrier bug
+Jonathan Campbell <joncamp@tiac.net> - bug fixes
+Andre Majorel <amajorel@teaser.fr> - original Linux port, and other
+	enhancements
+Udo Monk <um@compuserve.com> - portability improvements and testing
+
+This file is rather sparse on contributors before v3, since it was created
+from the limited information available in the BSP v3.0 text file and source.
+
+

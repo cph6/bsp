@@ -1,13 +1,11 @@
 /*- FUNCS.C ----------------------------------------------------------------*/
-#if defined(__GNUC__)
-#define INLINE __inline__
-#else
-#define INLINE
-#endif
-
+/* $Id: funcs.c,v 1.2 2000/08/24 21:37:08 cph Exp $ */
 /*- terminate the program reporting an error -------------------------------*/
 
-static void ProgError( char *errstr, ...)
+#include "structs.h"
+#include "bsp.h"
+
+void ProgError( char *errstr, ...)
 {
    va_list args;
 
@@ -21,7 +19,7 @@ static void ProgError( char *errstr, ...)
 
 /*- allocate memory with error checking ------------------------------------*/
 
-static INLINE void *GetMemory( size_t size)
+void *GetMemory( size_t size)
 {
    void *ret = malloc( size);
    if (!ret)
@@ -31,7 +29,7 @@ static INLINE void *GetMemory( size_t size)
 
 /*- reallocate memory with error checking ----------------------------------*/
 
-static INLINE void *ResizeMemory( void *old, size_t size)
+void *ResizeMemory( void *old, size_t size)
 {
    void *ret = realloc( old, size);
    if (!ret)
@@ -41,3 +39,4 @@ static INLINE void *ResizeMemory( void *old, size_t size)
 
 
 /*--------------------------------------------------------------------------*/
+
