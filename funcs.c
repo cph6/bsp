@@ -1,5 +1,5 @@
 /*- FUNCS.C ----------------------------------------------------------------*/
-/* $Id: funcs.c,v 1.2 2000/08/24 21:37:08 cph Exp $ */
+/* $Id: funcs.c,v 1.3 2000/08/26 12:56:40 cph Exp $ */
 /*- terminate the program reporting an error -------------------------------*/
 
 #include "structs.h"
@@ -14,6 +14,7 @@ void ProgError( char *errstr, ...)
    vfprintf( stderr, errstr, args);
    fprintf(stderr, " ***\n");
    va_end( args);
+   unlink(outwad);
    exit( 5);
 }
 
