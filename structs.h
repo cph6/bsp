@@ -136,8 +136,8 @@ struct Pnode
 
 struct SSector
 {
-   short int num;       /* number of Segs in this Sub-Sector */
-   short int first;     /* first Seg */
+   unsigned short int num;       /* number of Segs in this Sub-Sector */
+   unsigned short int first;     /* first Seg */
 };
 
 /*--------------------------------------------------------------------------*/
