@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.4 2000/08/28 19:13:44 cph Exp $
+# $Id: Makefile.am,v 1.5 2001/07/21 12:47:30 cph Exp $
 
 BSP = ../bsp
 WADS = bsp23bug.wad conduits.wad transdor.wad visarea.wad
@@ -18,5 +18,6 @@ doom.wad	:	$(DOOM_WAD)
 test	:	$(WADS) doom.wad
 	$(MD5) $(WADS) doom.wad | diff MD5SUMS -
 
-clean	:	$(WADS) doom.wad
+clean	:
+	rm -f $(WADS) doom.wad
 
