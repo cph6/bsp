@@ -1,5 +1,5 @@
 /*- MAKENODE.C --------------------------------------------------------------*
- $Id: makenode.c,v 1.6 2000/09/07 19:51:49 cph Exp $
+ $Id: makenode.c,v 1.7 2002/05/04 14:49:15 cph Exp $
  Recursively create nodes and return the pointers.
 *---------------------------------------------------------------------------*/
 #include "structs.h"
@@ -388,8 +388,10 @@ struct Node *CreateNode(struct Seg *ts, const bbox_t bbox)
 
 	if(IsItConvex(lefts))	  								/* Check lefthand side*/
 		{
+	        if (verbosity > 1) Verbose("L");
 		tn->nextl = CreateNode(lefts,tn->leftbox);	/* still segs remaining*/
 		tn->chleft = 0;
+	        if (verbosity > 1) Verbose("\b");
 		}
 	else
 		{
@@ -401,8 +403,10 @@ struct Node *CreateNode(struct Seg *ts, const bbox_t bbox)
 	
 	if(IsItConvex(rights))									/* Check righthand side*/
 		{
+	        if (verbosity > 1) Verbose("R");
 		tn->nextr = CreateNode(rights, tn->rightbox);	/* still segs remaining*/
 		tn->chright = 0;
+	        if (verbosity > 1) Verbose("\b");
 		}
 	else
 		{

@@ -25,6 +25,10 @@ At Andre's insistence, I updated the man page for bsp. I'd forgotten there was
 a man page actually. It wasn't being installed, so I added it to the
 Makefile.am.
 
+2002/04/06
+
+Ok, crude approximation of a Zennode-like progress bar in place.
+
 2000/08/27
 
 Fixed up a large number of memory leaks. Basically BSP was designed to do 
