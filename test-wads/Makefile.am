@@ -1,15 +1,22 @@
-# $Id: Makefile.am,v 1.1 2000/08/25 21:04:37 cph Exp $
+# $Id: Makefile.am,v 1.2 2000/08/25 21:22:49 cph Exp $
 
 BSP = ../bsp
 WADS = bsp23bug.wad conduits.wad transdor.wad visarea.wad
 UNWADS = bsp23bug.unbuiltwad conduits.unbuiltwad transdor.unbuiltwad visarea.unbuiltwad
 MD5 = md5
+DOOM_WAD=/usr/local/share/games/doom/doom.wad
+TIME=time
 
 EXTRA_DIST = $(UNWADS)
 
 %.wad	:	%.unbuiltwad
-	$(BSP) -o $@ $<
+	$(TIME) $(BSP) -o $@ $<
 
-test	:	$(WADS)
-	$(MD5) $(WADS) | diff MD5SUMS -
+doom.wad	:	$(DOOM_WAD)
+	$(TIME) $(BSP) -o $@ $(DOOM_WAD)
+
+test	:	$(WADS) doom.wad
+	$(MD5) $(WADS) doom.wad | diff MD5SUMS -
+
+clean	:	$(WADS) doom.wad
 
