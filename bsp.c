@@ -113,12 +113,12 @@ static int OpenWadFile(char *filename)
  if (fread(&wad,1,sizeof(wad),infile)!=sizeof(wad) ||
      (wad.type[0]!='I' && wad.type[0]!='P') || wad.type[1]!='W'
      || wad.type[2]!='A' || wad.type[3]!='D')
-   ProgError("%s does not appear to be a wad file -- bad magic", filename);
+   ProgError("%s does not appear to be a WAD file -- bad magic", filename);
  /* Swap header into machine endianness */
- swaplong(&(wad.num_entries));
- swaplong(&(wad.dir_start));
+  swaplong(&wad.num_entries);
+  swaplong(&wad.dir_start);
 
- Verbose("Opened %cWAD file : %s. %lu dir entries at 0x%lX.\n",
+  Verbose("Opened %cWAD file: %s. %lu dir entries at 0x%08lX.\n",
 	wad.type[0],filename,wad.num_entries,wad.dir_start);
 
  direc = GetMemory(sizeof(struct directory) * wad.num_entries);
@@ -163,6 +163,8 @@ static int OpenWadFile(char *filename)
 	 !strncmp(dir->name,"SSECTORS",8) ||
 	 !strncmp(dir->name,"NODES",8) ||
 	 !strncmp(dir->name,"BLOCKMAP",8) ||
+	 !strncmp(dir->name, "BEHAVIOR", 8) ||
+	 !strncmp(dir->name, "SCRIPTS", 8) ||
 	 (!noreject && !strncmp(dir->name,"REJECT",8)))
        continue;  /* Ignore these since we're rebuilding them anyway */
 
