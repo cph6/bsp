@@ -17,6 +17,7 @@ CFLAGS="-Wall -pg -ffast-math"
 
 dnl Checks for programs.
 AC_PROG_CC
+AC_C_INLINE
 AC_C_BIGENDIAN
 AC_PROG_MAKE_SET
 
