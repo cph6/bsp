@@ -1,4 +1,4 @@
-/* $Id: endian.c,v 1.3 2002/04/06 19:31:51 cph Exp $
+/* $Id: endian.c,v 1.4 2003/03/03 22:57:39 cph Exp $
  *
  * Endianness correction for Doom level structures
  * Written by Oliver Kraus <olikraus@yahoo.com>
@@ -43,15 +43,11 @@ void swaplong(unsigned long *l)
   *l = t;
 }
 
-void swapint(unsigned int *l)
-{
-  unsigned int t;
-
-  ((char *) &t)[ 0] = ((char *) l)[ 3];
-  ((char *) &t)[ 1] = ((char *) l)[ 2];
-  ((char *) &t)[ 2] = ((char *) l)[ 1];
-  ((char *) &t)[ 3] = ((char *) l)[ 0];
-  *l = t;
+inline void swapint(unsigned int *l) {
+  if(sizeof(int) == 4) { swaplong((void *)l); }
+  else if(sizeof(int) == 2) { swapshort((void *)l); }
+  else { ProgError("int is neither 4 nor 2 bytes in size"); }
+  return;
 }
 
 void ConvertVertex(void)
