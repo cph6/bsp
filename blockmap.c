@@ -157,8 +157,6 @@ struct blocklist_s {
 	struct blocklist_s *next;          /* for hash table */
 };
 
-static struct Block blockhead;
-
 static struct blocklist_s **blockhash;
 static int blockhash_size;
 static int blocklist_size;           /* size, in bytes of the blocklists */
@@ -257,34 +255,31 @@ static struct blocklist_s *blockhash_add(struct blocklist_s *newbl)
 	return bl;
 }
 
-static void blockmap_assemble()
+static void blockmap_assemble(const struct Block* blockmaphead)
 {
-	int offset;
 	int i;
-	
+	int offset;
+
 	/* build the lump itself */
 
 	size_t blockmap_size =
-		sizeof(blockhead) +
+		sizeof(*blockmaphead) +
 		num_blockptrs * sizeof(short) +
 		blocklist_size;
-	void* blockmap = GetMemory(blockmap_size);
+	register short* blockmap = GetMemory(blockmap_size);
 
 	/* header */
 
-	memcpy(blockmap, &blockhead, sizeof(blockhead));
-	swapshort((short *)blockmap);
-	swapshort(((short *)blockmap)+1);
-	swapshort(((short *)blockmap)+2);
-	swapshort(((short *)blockmap)+3);
+	memcpy(blockmap, blockmaphead, sizeof *blockmaphead);
+	swapshort(blockmap);
+	swapshort(blockmap+1);
+	swapshort(blockmap+2);
+	swapshort(blockmap+3);
 	
-	/* lists */
-
-	offset = blockmap_size - blocklist_size;
-
 	/* every hash chain */
 	
-	for(i=0; i<blockhash_size; ++i) {
+	for(i=0,offset=num_blockptrs+sizeof(*blockmaphead)/sizeof(short);
+			i<blockhash_size; ++i) {
 		struct blocklist_s *bl;
 
 		/* every blocklist in the chain */
@@ -297,27 +292,25 @@ static void blockmap_assemble()
 
 			/* offset is in short ints, not bytes */
 			
-			bl->offset = offset / sizeof(short);
+			bl->offset = offset;
 
 			/* write each line */
 
 			for(l=0; l<bl->num_lines; ++l) {
-				*(short *)(blockmap + offset) = bl->lines[l];
-				swapshort((short *)(blockmap + offset));
-				offset += sizeof(short);
+				blockmap[offset] = bl->lines[l];
+				swapshort(blockmap + offset);
+				offset++;
 			}
 		}
 	}
 
-	/* write all the offsets */
-
-	offset = sizeof(blockhead);
+	offset = sizeof(*blockmaphead)/sizeof(short);
 	
 	for(i=0; i<num_blockptrs; ++i) {
-		*(short *)(blockmap + offset) = blockptrs[i]->offset;
-		swapshort((short *)(blockmap + offset));
-		offset += sizeof(short);
+		blockmap[offset+i] = blockptrs[i]->offset;
+		swapshort(blockmap+offset+i);
 	}
+
         add_lump("BLOCKMAP", blockmap, blockmap_size);
 }
 
@@ -328,7 +321,8 @@ CreateBlockmap_compressed(const bbox_t bbox)
 	int             blocknum = 0;
 	short *         templines;
 	int             num_templines;
-	
+	struct Block	blockhead;
+
 	fprintf(stderr,"Creating compressed blockmap... ");
 
 	/* header */
@@ -398,7 +392,7 @@ CreateBlockmap_compressed(const bbox_t bbox)
 	
 	/* assemble */
 
-	blockmap_assemble();
+	blockmap_assemble(&blockhead);
 
 	/* deconstruct the hash table */
 
