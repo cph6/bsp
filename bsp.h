@@ -23,11 +23,6 @@
 
 /*- The function prototypes ------------------------------------------------*/
 
-void ProgError( char *, ...);
-void *GetMemory(size_t);
-void *ResizeMemory(void *, size_t);
-unsigned ComputeAngle(int,int);
-
 #undef max
 #define max(a,b) (((a)>(b))?(a):(b))
 
@@ -35,26 +30,30 @@ unsigned ComputeAngle(int,int);
 
 #define Printname(dir) printf("%-8.8s",(dir)->name)
 
-/*- Global functions -------------------------------------------------------*/
+/*- Global functions & variables ------------------------------------------*/
 
 /* bsp.c */
 void progress(void);
 void FindLimits(struct Seg *);
 int SplitDist(struct Seg *ts);
 
-/* picknode.c */
-int DoLinesIntersect();
-void ComputeIntersection(short int *outx,short int *outy);
-
-/*- Global variables -------------------------------------------------------*/
-
-/* bsp.c */
 extern char *outwad;
 
 struct lumplist *FindDir(const char *);
 void* ReadLump(struct lumplist *l);
+void add_lump(const char *name, void *data, size_t length);
+
+/* funcs.c */
+extern int verbosity;
+void Verbose(const char*, ...);
+void ProgError(const char *, ...);
+void *GetMemory(size_t);
+void *ResizeMemory(void *, size_t);
 
 /* level.c */
+
+void DoLevel(const char *current_level_name, struct lumplist * current_level);
+
 extern struct Vertex *vertices;
 extern long num_verts;
 
@@ -83,7 +82,8 @@ extern long psx,psy,pex,pey,pdx,pdy;
 extern long lsx,lsy,lex,ley;
 
 /* makenode.c */
-extern struct Node *CreateNode(struct Seg *);
+struct Node *CreateNode(struct Seg *);
+unsigned ComputeAngle(int,int);
 
 /* picknode.c */
 extern int factor;
@@ -91,5 +91,7 @@ extern int factor;
 struct Seg *PickNode_traditional(struct Seg *);
 struct Seg *PickNode_visplane(struct Seg *);
 extern struct Seg *(*PickNode)(struct Seg *);
+int DoLinesIntersect();
+void ComputeIntersection(short int *outx,short int *outy);
 
 /*------------------------------- end of file ------------------------------*/

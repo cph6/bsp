@@ -27,6 +27,10 @@
 #include "structs.h"
 #include "bsp.h"
 
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
 /*- Global Vars ------------------------------------------------------------*/
 
 static FILE *outfile;
@@ -47,30 +51,14 @@ static struct wad_header wad;
 
 /*- Prototypes -------------------------------------------------------------*/
 
-static void GetThings(void);
-static void GetVertexes(void);
-static void GetLinedefs(void);
-static void GetSidedefs(void);
-static void GetSectors(void);
-
-static struct Seg *CreateSegs();
-
-static int IsItConvex(struct Seg *);
-
-static void ReverseNodes(struct Node *);
-static long CreateBlockmap(void);
-
-static int IsLineDefInside(int, int, int, int, int);
-static int CreateSSector(struct Seg *);
-
 static FILE *infile;
 
 /*--------------------------------------------------------------------------*/
 
 void progress()
 {
-	if(!((++pcnt)&31))
-		fprintf(stderr,"%c\b","/-\\|"[((pcnt)>>5)&3]);
+	if((verbosity > 1) && !((++pcnt)&31))
+		printf("%c\b","/-\\|"[((pcnt)>>5)&3]);
 }
 
 /*- get the directory from a wad file --------------------------------------*/
@@ -281,6 +269,8 @@ void usage(void)
  exit(1);
 }
 
+static int quiet;
+
 static void parse_options(int argc, char *argv[])
 {
  static char *fnames[2];
@@ -290,6 +280,7 @@ static void parse_options(int argc, char *argv[])
    enum {NONE, STRING, INT} arg;
  } tab[]= { {"-vp", &visplane, NONE},
             {"-noreject", &noreject, NONE},
+            {"-q", &quiet, NONE},
             {"-factor", &factor, INT},
             {"-o", fnames+1, STRING},
           };
@@ -355,11 +346,27 @@ int main(int argc,char *argv[])
  struct directory *newdirec;
  int levels;
 
- setbuf(stdout,NULL);
-
- puts("* Doom BSP node builder ver 3.0 (c) 1998 Colin Reed, Lee Killough *");
-
  parse_options(argc,argv);
+
+ verbosity = quiet ? 0 : 
+#ifdef HAVE_ISATTY
+	isatty(STDOUT_FILENO) ? 2 : 1
+#else
+	2
+#endif
+	;
+
+ /* Don't buffer output to stdout, people want to see the progress 
+  * as it happens */
+#ifdef HAVE_ISATTY
+ if (isatty(STDOUT_FILENO))
+#endif
+   setbuf(stdout,NULL);
+
+ if (verbosity)
+  puts("* Doom BSP node builder ver " VERSION "\n"
+	"Copyright (c)	1998 Colin Reed, Lee Killough\n"
+	"		2000 Colin Phipps <cph@lxdoom.linuxgames.com>\n\n");
 
  levels = OpenWadFile(testwad);		/* Opens and reads directory*/
 

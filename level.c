@@ -87,13 +87,10 @@ static void     GetSectors(void);
 
 static struct Seg *CreateSegs();
 
-static int      IsItConvex(struct Seg *);
-
 static void     ReverseNodes(struct Node *);
 static long     CreateBlockmap(void);
 
 static int      IsLineDefInside(int, int, int, int, int);
-static int      CreateSSector(struct Seg *);
 
 /*--------------------------------------------------------------------------*/
 /* Find limits from a list of segs, does this by stepping through the segs */

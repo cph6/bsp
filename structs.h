@@ -1,3 +1,5 @@
+#include "config.h"
+
 /*- Doom Structures .. Colin Reed 1994 -------------------------------------*/
 
 struct wad_header 					/* Linked wad files list.*/
