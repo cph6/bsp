@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.10 2000/09/09 15:38:44 cph Exp $
+# $Id: Makefile.am,v 1.11 2001/11/17 15:42:46 cph Exp $
 
 SUBDIRS = test-wads DOS Win32
 
@@ -14,9 +14,6 @@ bin_PROGRAMS=bsp
 bsp_SOURCES=blockmap.c bsp.c endian.c funcs.c level.c makenode.c picknode.c bsp.h structs.h
 
 blockmap.c bsp.c funcs.c endian.c level.c makenode.c picknode.c : bsp.h structs.h config.h
-
-config.h	:	configure.in
-	./configure
 
 dos	:	$(DOCS)
 	-mkdir dos-dist

@@ -1,9 +1,9 @@
-# $Id: Makefile.am,v 1.5 2001/07/21 12:47:30 cph Exp $
+# $Id: Makefile.am,v 1.6 2001/11/17 15:42:43 cph Exp $
 
 BSP = ../bsp
 WADS = bsp23bug.wad conduits.wad transdor.wad visarea.wad
 UNWADS = bsp23bug.unbuiltwad conduits.unbuiltwad transdor.unbuiltwad visarea.unbuiltwad
-MD5 = md5
+MD5 = md5sum
 DOOM_WAD=/usr/local/share/games/doom/doom.wad
 TIME=time
 
