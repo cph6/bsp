@@ -1,6 +1,3 @@
-Node builder for DOOM levels (c) 1998 Colin Reed, Lee Killough
-                             (c) 2000 Colin Phipps
-
 BSP was originally written by Colin Reed. It was based on ideas from the Doom
 specs, by Matt Fell <msfell@aol.com>, and objects.c from the DEU v5 source
 code, by Raphael Quinet <Raphael.Quinet@eed.ericsson.se>.
