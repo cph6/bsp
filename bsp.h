@@ -110,4 +110,13 @@ extern struct Seg *(*PickNode)(struct Seg *, const bbox_t bbox);
 int DoLinesIntersect();
 void ComputeIntersection(short int *outx,short int *outy);
 
+/* malloc edbugging with dmalloc */
+#ifdef HAVE_LIBDMALLOC
+#include <dmalloc.h>
+
+#define GetMemory malloc
+#define ResizeMemory realloc
+
+#endif
+
 /*------------------------------- end of file ------------------------------*/

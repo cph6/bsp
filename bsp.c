@@ -266,7 +266,7 @@ static struct directory write_lump(struct lumplist *lump)
  if ((lump->dir->start = ftell(outfile)) == -1 || (lump->dir->length &&
    fwrite(lump->data, 1, lump->dir->length, outfile) != lump->dir->length))
    ProgError("Failure writing %-.8s\n", lump->dir->name);
- if (!lump->islevel) { free(lump->data); lump->data = NULL; }
+ if (!lump->islevel && lump->data) { free(lump->data); lump->data = NULL; }
 
  /* This dir entry is to be written to file, so swap back to little endian */
  swaplong(&(lump->dir->start));
@@ -496,6 +496,7 @@ int main(int argc,char *argv[])
  if ((wad.dir_start = ftell(outfile)) == -1 ||
     fwrite(newdirec,sizeof(struct directory),wad.num_entries,outfile)!=wad.num_entries)
     ProgError("Failure writing lump directory");
+ free(newdirec);
 
  /* Swap header back to little endian */
  swaplong(&(wad.num_entries));
