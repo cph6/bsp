@@ -1,4 +1,4 @@
-/* $Id: endian.c,v 1.1 2000/08/27 20:38:19 cph Exp $
+/* $Id: endian.c,v 1.2 2002/01/20 11:56:10 cph Exp $
  *
  * Endianness correction for Doom level structures
  * Written by Oliver Kraus <olikraus@yahoo.com>
@@ -12,6 +12,10 @@
 
 #ifndef WORDS_BIGENDIAN
 void ConvertAll(void) {};
+void ConvertVertex(void) {};
+void ConvertLinedef(void) {};
+void ConvertSidedef(void) {};
+void ConvertSector(void) {};
 
 void swapshort(unsigned short *i) {};
 void swaplong(unsigned long *l) {};
@@ -50,26 +54,7 @@ void swapint(unsigned int *l)
   *l = t;
 }
 
-static void ConvertThing(void)
-{
-  int i, cnt;
-  struct Thing *s;
-  struct lumplist *l = FindDir("THINGS");
-  if ( l == NULL )
-    return;
-  cnt = l->dir->length / sizeof(struct Thing);
-  for ( i = 0; i < cnt; i++ )
-  {
-    s = ((struct Thing *)l->data)+i;
-    swapshort((unsigned short *)&(s->xpos));
-    swapshort((unsigned short *)&(s->ypos));
-    swapshort((unsigned short *)&(s->angle));
-    swapshort((unsigned short *)&(s->type));
-    swapshort((unsigned short *)&(s->when));
-  }
-}
-
-static void ConvertVertex(void)
+void ConvertVertex(void)
 {
   int i, cnt;
   struct Vertex *s;
@@ -85,7 +70,7 @@ static void ConvertVertex(void)
   }
 }
 
-static void ConvertLineDef(void)
+void ConvertLineDef(void)
 {
   int i, cnt;
   struct LineDef *s;
@@ -106,7 +91,7 @@ static void ConvertLineDef(void)
   }
 }
 
-static void ConvertSidedefs(void)
+void ConvertSidedef(void)
 {
   int i, cnt;
   struct SideDef *s;
@@ -123,7 +108,7 @@ static void ConvertSidedefs(void)
   }
 }
 
-static void ConvertSector(void)
+void ConvertSector(void)
 {
   int i, cnt;
   struct Sector *s;
@@ -211,10 +196,9 @@ static void ConvertPnode(void)
 void ConvertAll(void)
 {
   Verbose("Doing endianness correction... ");
-  ConvertThing();
   ConvertVertex();
   ConvertLineDef();
-  ConvertSidedefs();
+  ConvertSidedef();
   ConvertSector();
   ConvertPseg();
   ConvertSSector();

@@ -56,6 +56,10 @@ void add_lump(const char *name, void *data, size_t length);
 /* endian.c */
 
 void ConvertAll(void);
+void ConvertVertex(void);
+void ConvertLinedef(void);
+void ConvertSidedef(void);
+void ConvertSector(void);
 
 void swapshort(unsigned short *i);
 void swaplong(unsigned long *l);

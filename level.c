@@ -31,9 +31,6 @@
 
 /*- Global Vars ------------------------------------------------------------*/
 
-static struct Thing *things;
-static long     num_things = 0;
-
 struct Vertex  *vertices;
 long            num_verts = 0;
 
@@ -64,7 +61,6 @@ long            lsx, lsy, lex, ley;
 
 /*- Prototypes -------------------------------------------------------------*/
 
-static void     GetThings(void);
 static void     GetVertexes(void);
 static void     GetLinedefs(void);
 static void     GetSidedefs(void);
@@ -170,20 +166,6 @@ CreateSegs()
 	}
 	Verbose("done.\n");
 	return fs;
-}
-
-/*- read the things from the wad file and place in 'things' ----------------*/
-static void 
-GetThings(void)
-{
-	struct lumplist *l;
-
-	l = FindDir("THINGS");
-
-	if (!l || !(num_things = l->dir->length / sizeof(struct Thing)))
-		ProgError("Must have at least 1 Thing");
-
-	things = ReadLump(l);
 }
 
 /*- read the vertices from the wad file and place in 'vertices' ------------
@@ -351,14 +333,15 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 	num_psegs = 0;
 	num_nodes = 0;
 
-	GetThings();
-	GetLinedefs();		/* Get linedefs and vertices */
-	GetVertexes();		/* and delete redundant. */
+	GetLinedefs();		/* Get and convert linedefs first */
+        ConvertLinedef();       /* so we can to remove redundant */
+	GetVertexes();		/* vertices here. */
 	GetSidedefs();
 	GetSectors();
 
-	ConvertAll();		/* Switch to machine endianness
-				 * for calculations */
+        ConvertVertex();
+        ConvertSidedef();
+        ConvertSector();
 
 	tsegs = CreateSegs();	/* Initially create segs */
 
