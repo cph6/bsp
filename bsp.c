@@ -32,12 +32,18 @@
 #endif
 
 #include <errno.h>
+#include <fcntl.h>
+
+#ifndef O_BINARY
+# define O_BINARY 0
+#endif
 
 /*- Global Vars ------------------------------------------------------------*/
 
 static FILE *outfile;
 static char *testwad;
-char *outwad;
+static char *outwad;
+char* unlinkwad;
 
 static struct directory *direc = NULL;
 
@@ -376,6 +382,7 @@ int main(int argc,char *argv[])
  struct lumplist *lump,*l;
  struct directory *newdirec;
  int levels;
+ int using_temporary_output = 0;
 
  parse_options(argc,argv);
 
@@ -409,12 +416,24 @@ int main(int argc,char *argv[])
    PickNode=PickNode_visplane;
   }
 
-  if (!(outfile=fopen(outwad,"wb")))
-   {
+ {
+   int fd = open(outwad,O_WRONLY | O_CREAT | O_EXCL | O_BINARY,0644);
+   outfile = NULL;
+   if (fd == -1 && errno == EEXIST) {
+#ifdef HAVE_TMPFILE
+     outfile = tmpfile();
+     using_temporary_output = 1;
+#endif
+   } else if (fd != -1) {
+     outfile = fdopen(fd,"wb");
+     unlinkwad = outwad;
+   }
+   if (!outfile) {
     fputs("Error: Could not open output PWAD file ",stderr);
     perror(outwad);
     exit(1);
    }
+ }
 
  /* Allocate space for existing lumps plus some extra for each level */
  newdirec = GetMemory((wad.num_entries + 10*levels)*sizeof(struct directory));
@@ -444,9 +463,16 @@ int main(int argc,char *argv[])
  if (fseek(outfile, 0, SEEK_SET) || fwrite(&wad,1,12,outfile)!=12)
     ProgError("Failure writing wad header");
 
-  fclose(outfile);
+ if (using_temporary_output) {
+   FILE* realout = fopen(outwad,"wb");
+   unlinkwad = outwad;
+   rewind(outfile);
+   fcopy(outfile,realout);
+   fclose(realout);
+ }
+ fclose(outfile);
 
-  Verbose("\nSaved WAD as %s\n",outwad);
+ Verbose("\nSaved WAD as %s\n",outwad);
 
  return 0;
 }

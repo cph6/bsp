@@ -37,7 +37,7 @@ void progress(void);
 void FindLimits(struct Seg *);
 int SplitDist(struct Seg *ts);
 
-extern char *outwad;
+extern char *unlinkwad;
 
 struct lumplist *FindDir(const char *);
 void* ReadLump(struct lumplist *l);
