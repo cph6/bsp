@@ -387,6 +387,7 @@ CreateBlockmap()
 			progress();
 
 			blockptrs[blocknum] = (blockoffs + 4 + (blockptrs_size / 2));
+			swapshort((unsigned short *)blockptrs+blocknum);
 
 			blocklists = ResizeMemory(blocklists, ((blockoffs + 1) * 2));
 			blocklists[blockoffs] = 0;
@@ -399,11 +400,13 @@ CreateBlockmap()
 					 */
 					blocklists = ResizeMemory(blocklists, ((blockoffs + 1) * 2));
 					blocklists[blockoffs] = n;
+					swapshort((unsigned short *)blocklists+blockoffs);
 					blockoffs++;
 				}
 			}
 			blocklists = ResizeMemory(blocklists, ((blockoffs + 1) * 2));
 			blocklists[blockoffs] = -1;
+			swapshort((unsigned short *)blocklists+blockoffs);
 			blockoffs++;
 
 			blocknum++;
@@ -489,6 +492,9 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 	GetSidedefs();
 	GetSectors();
 
+	ConvertAll();		/* Switch to machine endianness
+				 * for calculations */
+
 	tsegs = CreateSegs();	/* Initially create segs */
 
 	FindLimits(tsegs);	/* Find limits of vertices */
@@ -528,6 +534,10 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 		long            blockmap_size = CreateBlockmap();
 		char           *data = GetMemory(blockmap_size + blockptrs_size + 8);
 		memcpy(data, &blockhead, 8);
+		swapshort((unsigned short *)data+0);
+		swapshort((unsigned short *)data+1);
+		swapshort((unsigned short *)data+2);
+		swapshort((unsigned short *)data+3);
 		memcpy(data + 8, blockptrs, blockptrs_size);
 		memcpy(data + 8 + blockptrs_size, blocklists, blockmap_size);
 		free(blockptrs);
@@ -543,6 +553,7 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 
 	free(SectorHits);
 
+	ConvertAll();		/* Switch back to file endianness */
 }				/* if (lump->islevel) */
 
 /*- end of file ------------------------------------------------------------*/

@@ -43,6 +43,14 @@ struct lumplist *FindDir(const char *);
 void* ReadLump(struct lumplist *l);
 void add_lump(const char *name, void *data, size_t length);
 
+/* endian.c */
+
+void ConvertAll(void);
+
+void swapshort(unsigned short *i);
+void swaplong(unsigned long *l);
+void swapint(unsigned int *l);
+
 /* funcs.c */
 extern int verbosity;
 void Verbose(const char*, ...);

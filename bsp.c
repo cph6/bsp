@@ -114,6 +114,9 @@ static int OpenWadFile(char *filename)
      (wad.type[0]!='I' && wad.type[0]!='P') || wad.type[1]!='W'
      || wad.type[2]!='A' || wad.type[3]!='D')
    ProgError("%s does not appear to be a wad file -- bad magic", filename);
+ /* Swap header into machine endianness */
+ swaplong(&(wad.num_entries));
+ swaplong(&(wad.dir_start));
 
  Verbose("Opened %cWAD file : %s. %lu dir entries at 0x%lX.\n",
 	wad.type[0],filename,wad.num_entries,wad.dir_start);
@@ -128,6 +131,11 @@ static int OpenWadFile(char *filename)
  for (i=wad.num_entries;i--;dir++)
   {
    register struct lumplist *l=GetMemory(sizeof(*l));
+
+   /* Swap dir entry to machine endianness */
+   swaplong((unsigned long *)&(dir->start));
+   swaplong((unsigned long *)&(dir->length));
+
    l->dir=dir;
    l->data=NULL;
    l->next=NULL;
@@ -259,6 +267,11 @@ static struct directory write_lump(struct lumplist *lump)
    fwrite(lump->data, 1, lump->dir->length, outfile) != lump->dir->length))
    ProgError("Failure writing %-.8s\n", lump->dir->name);
  if (!lump->islevel) { free(lump->data); lump->data = NULL; }
+
+ /* This dir entry is to be written to file, so swap back to little endian */
+ swaplong(&(lump->dir->start));
+ swaplong(&(lump->dir->length));
+
  return *lump->dir;
 }
 
@@ -447,6 +460,9 @@ int main(int argc,char *argv[])
     fwrite(newdirec,sizeof(struct directory),wad.num_entries,outfile)!=wad.num_entries)
     ProgError("Failure writing lump directory");
 
+ /* Swap header back to little endian */
+ swaplong(&(wad.num_entries));
+ swaplong(&(wad.dir_start));
  if (fseek(outfile, 0, SEEK_SET) || fwrite(&wad,1,12,outfile)!=12)
     ProgError("Failure writing wad header");
 
