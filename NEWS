@@ -8,7 +8,7 @@ There is no significant difference, in terms of the nodes produced, between
 this version and BSP v3.0. In fact on my computer (FreeBSD 4.1-STABLE, PII),
 the output is byte-for-byte identical with BSP v3.0. This is not true for the
 binary DOS and Win32 versions I'm distributing though, because they are linked
-againsta different math library, but they are still effectively identical to
+against a different math library, but they are still effectively identical to
 BSP v3.0 I believe.
 
 So what changes are there you ask? Well...
