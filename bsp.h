@@ -49,6 +49,9 @@ void ComputeIntersection(short int *outx,short int *outy);
 /*- Global variables -------------------------------------------------------*/
 
 /* bsp.c */
+struct lumplist *FindDir(const char *);
+
+/* level.c */
 extern struct Vertex *vertices;
 extern long num_verts;
 

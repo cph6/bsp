@@ -22,6 +22,13 @@ struct Block
 	short yblocks;
 };
 
+struct lumplist {
+ struct lumplist *next;
+ struct directory *dir;
+ void *data;
+ char islevel;
+};
+
 /*- The level structures ---------------------------------------------------*/
 
 struct Thing

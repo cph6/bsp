@@ -1,11 +1,37 @@
 /*- MAKENODE.C --------------------------------------------------------------*
- $Id: makenode.c,v 1.2 2000/08/24 21:37:08 cph Exp $
+ $Id: makenode.c,v 1.3 2000/08/26 10:38:35 cph Exp $
  Recursively create nodes and return the pointers.
 *---------------------------------------------------------------------------*/
 #include "structs.h"
 #include "bsp.h"
 
 short node_x, node_y, node_dx, node_dy;
+
+/*--------------------------------------------------------------------------*/
+
+int SplitDist(struct Seg *ts)
+{
+	double t,dx,dy;
+
+	if(ts->flip==0)
+		{
+		dx = (double)(vertices[linedefs[ts->linedef].start].x)-(vertices[ts->start].x);
+		dy = (double)(vertices[linedefs[ts->linedef].start].y)-(vertices[ts->start].y);
+
+		if(dx == 0 && dy == 0) printf("Trouble in SplitDist %f,%f\n",dx,dy);
+		t = sqrt((dx*dx) + (dy*dy));
+		return (int)t;
+		}
+	else
+		{
+		dx = (double)(vertices[linedefs[ts->linedef].end].x)-(vertices[ts->start].x);
+		dy = (double)(vertices[linedefs[ts->linedef].end].y)-(vertices[ts->start].y);
+
+		if(dx == 0 && dy == 0) printf("Trouble in SplitDist %f,%f\n",dx,dy);
+		t = sqrt((dx*dx) + (dy*dy));
+		return (int)t;
+		}
+}
 
 /*---------------------------------------------------------------------------*
  Split a list of segs (ts) into two using the method described at bottom of

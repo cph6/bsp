@@ -1,1 +1,19 @@
 This ChangeLog contains a history of changes and development from v5 onward.
+
+2000/08/25
+
+Made a makefile to built the test wads. I copied the test WADs to another 
+machine, and ran original DOS BSP 3.0 on them, then made a note of the MD5 
+sums of the resulting files. Using these I can check that my version is still 
+producing identical results to the original v3.0.
+
+2000/08/23
+
+Checked in the BSP 3.0 source. Immediately ditched the existing makefiles and 
+created GNU autoconf/automake ones - much less messy.
+
+First major problem to overcome was the crude existing build system - all the 
+.c files were #include'd into bsp.c, which was kinda ugly. And whoever wrote 
+this had an obsession with labelling everything "static" even though there was 
+only one source file. Fun.
+
