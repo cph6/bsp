@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.8 2000/08/28 16:38:25 cph Exp $
+# $Id: Makefile.am,v 1.9 2000/08/28 19:13:47 cph Exp $
 
 SUBDIRS = test-wads DOS Win32
 
@@ -20,7 +20,7 @@ config.h	:	configure.in
 
 dos	:	$(DOCS)
 	-mkdir dos-dist
-	for fn in $(DOCS); do perl -p -e 's/$$/\r/' < $$fn > dos-dist/$$fn; done
+	for fn in $(DOCS); do perl -p -e 's/$$/\r/' < $$fn > `echo dos-dist/$$fn | perl -p -e 's/(.txt)?$$/.txt/'`; done
 
 README	:	index.html
 	lynx -dump index.html > README
