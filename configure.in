@@ -36,4 +36,4 @@ dnl Checks for library functions.
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(isatty unlink tmpfile)
 
-AC_OUTPUT(Makefile test-wads/Makefile)
+AC_OUTPUT(Makefile test-wads/Makefile DOS/Makefile Win32/Makefile)
