@@ -154,6 +154,9 @@ CreateSegs()
 
 	for (n = 0; n < num_lines; n++, l++) {	/* step through linedefs and
 		 * get side *//* numbers */
+                /* If line is 0 length, don't generate any segs */
+                if (!memcmp(&vertices[l->start],&vertices[l->end],sizeof *vertices))
+                  continue;
 		if (l->sidedef1 != -1)
 			(cs = add_seg(cs, n, l->start, l->end, &fs, sidedefs + l->sidedef1))->flip = 0;
 		else
@@ -176,7 +179,7 @@ static struct lumplist *vertlmp;
 static void 
 GetVertexes(void)
 {
-	long            n, used_verts, i;
+        long            n, used_verts;
 	int            *translate;
 	struct lumplist *l = FindDir("VERTEXES");
 
@@ -192,18 +195,13 @@ GetVertexes(void)
 	for (n = 0; n < num_verts; n++)	/* Unmark all vertices */
 		translate[n] = -1;
 
-	for (i = n = 0; i < num_lines; i++) {	/* Mark all used vertices *//* R
-						 * emove 0-length lines */
-		int             s = linedefs[i].start;
-		int             e = linedefs[i].end;
+	for (n = 0; n < num_lines; n++) {	/* Mark all used vertices */
+		int             s = linedefs[n].start;
+		int             e = linedefs[n].end;
 		if (s < 0 || s >= num_verts || e < 0 || e >= num_verts)
-			ProgError("Linedef %ld has vertex out of range\n", i);
-		if (vertices[s].x != vertices[e].x || vertices[s].y != vertices[e].y) {
-			linedefs[n++] = linedefs[i];
-			translate[s] = translate[e] = 0;
-		}
+			ProgError("Linedef %ld has vertex out of range\n", n);
+		translate[s] = translate[e] = 0;
 	}
-	i -= num_lines = n;
 	used_verts = 0;
 	for (n = 0; n < num_verts; n++)	/* Sift up all unused vertices */
 		if (!translate[n])
@@ -226,7 +224,6 @@ GetVertexes(void)
 		       num_verts - used_verts);
 	else
 		Verbose(".");
-	Verbose(i ? "%ld zero-length lines were removed.\n" : "\n", i);
 	num_verts = used_verts;
 	if (!num_verts)
 		ProgError("Couldn't find any used Vertices");
