@@ -8,7 +8,7 @@
 	Type="text/css" />
  </head>
  <body>
-<!-- $Id: index.html,v 1.1 2000/08/28 15:54:04 cph Exp $ -->
+<!-- $Id: index.html,v 1.2 2000/08/28 15:58:01 cph Exp $ -->
   <p>This is v5.0 of BSP, one of the best node builders for Doom.</p>
   <p>BSP is currently maintained by <a
 href="mailto:cph@lxdoom.linuxgames.com">Colin Phipps</a>.
@@ -71,18 +71,18 @@ using it as follows: <blockquote>bsp -q /dev/stdin /dev/stdout</blockquote>
    <ul><li>HOM-free transparent doors:
 <p>
   Simply make the sector referenced by the doortracks have a
-  sector tag of >= 900. No need to remember sector numbers
+  sector tag of &gt;= 900. No need to remember sector numbers
   and type them in on a command line -- just use any sector
-  tag >= 900 to permanently mark the sector special.
+  tag &gt;= 900 to permanently mark the sector special.
 </p><p>
   See <code>TRANSDOR.WAD</code> for an example of sector tags in the 900's
   being used to create HOM-free transparent door effects.
 </p>
     </li><li>
      Precious lines:
-     <p>If a linedef has a sector tag >= 900, then it is treated as "precious"
-and will not be split unless absolutely necessary. This is good to use
-around borders of deep water, invisible stairs, etc.</p>
+     <p>If a linedef has a sector tag &gt;= 900, then it is treated as
+"precious" and will not be split unless absolutely necessary. This is good to
+use around borders of deep water, invisible stairs, etc.</p>
      <p>Furthermore, just for grins, if the linedef's tag is 999, then the sidedefs'
 x-offsets set an angle adjustment in degrees to be applied -- you can look
 straight at a wall, but it might come right at you on both sides and
