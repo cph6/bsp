@@ -1,4 +1,30 @@
 -------------------------------------------------------------------------------
+Changes in v5.0 - Colin Phipps, 8/2000:
+
+Based on BSP v3.0, this version brings together a number of enhancements to
+BSP that have been floating around by various people.
+
+There is no significant difference, in terms of the nodes produced, between
+this version and BSP v3.0. In fact on my computer (FreeBSD 4.1-STABLE, PII),
+the output is byte-for-byte identical with BSP v3.0. This is not true for the
+binary DOS and Win32 versions I'm distributing though, because they are linked
+againsta different math library, but they are still effectively identical to
+BSP v3.0 I believe.
+
+So what changes are there you ask? Well...
+
+- better UNIX support, from Udo Monk and Andre Majorel
+- big endian support, from Oliver Kraus
+- from myself:
+  - major clean-up of the source code, splitting some stuff out into separate
+   files so there is less mixing of unrelated code.
+  - vastly more memory-efficient when working on large multi-level WADs
+  - more flexibility about input and output 
+    - can read from and write to pipes on UNIX systems
+    - output file can be the same as the input file
+  - Win32 version
+
+-------------------------------------------------------------------------------
 Changes in 3.0x:
 
 Lee Killough 9/98:
