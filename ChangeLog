@@ -1,5 +1,15 @@
 This ChangeLog contains a history of changes and development from v5 onward.
 
+2003/03/03
+
+Changes from Hirogen2:
+- compiling with more warning flags
+- bsp.c: preserve Hexen lumps
+- endian.c: depending on the size of "int", swapshort() or swaplong() is
+  called. This fixes a possible stack corruption on big-endian systems where
+  "int" is 2 bytes, as swapint() converted (always) 4 bytes.
+- level.c, makenode.c: minor prototype & type cleanups
+
 2002/05/04
 
 It seems my initial assessment of the fragglescript problem was well short. 
