@@ -31,6 +31,8 @@
 # include <unistd.h>
 #endif
 
+#include <errno.h>
+
 /*- Global Vars ------------------------------------------------------------*/
 
 static FILE *outfile;
@@ -53,6 +55,17 @@ static struct wad_header wad;
 
 static FILE *infile;
 
+/* fcopy - function to completely copy one stream to another */
+
+void fcopy(FILE* in, FILE* out)
+{
+	char buf[1024];
+	int rb;
+	while ((rb = fread(buf, 1, sizeof buf, in)) > 0) {
+		fwrite(buf, 1, rb, out);
+	}
+}
+
 /*--------------------------------------------------------------------------*/
 
 void progress()
@@ -73,6 +86,23 @@ static int OpenWadFile(char *filename)
 
  if (!(infile = fopen(filename,"rb")))
    ProgError("Error: Cannot open WAD file %s", filename);
+
+#if defined(HAVE_TMPFILE)
+ if (fseek(infile,0,SEEK_SET) == -1) {
+   FILE* intmp;
+   if (errno != ESPIPE) {
+     perror("fseek"); exit(errno);
+   }
+   if (!(intmp = tmpfile())) {
+     perror("tmpfile"); 
+     ProgError("Input was not seekable and failed to create temp file");
+   }
+   Verbose("Copying piped input to temporary file\n");
+   fcopy(infile,intmp);
+   fclose(infile);
+   rewind(infile = intmp);
+ }
+#endif
 
  if (fread(&wad,1,sizeof(wad),infile)!=sizeof(wad) ||
      (wad.type[0]!='I' && wad.type[0]!='P') || wad.type[1]!='W'

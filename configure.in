@@ -33,6 +33,6 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(isatty unlink)
+AC_CHECK_FUNCS(isatty unlink tmpfile)
 
 AC_OUTPUT(Makefile test-wads/Makefile)
