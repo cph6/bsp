@@ -1,4 +1,4 @@
-/* $Id: endian.c,v 1.2 2002/01/20 11:56:10 cph Exp $
+/* $Id: endian.c,v 1.3 2002/04/06 19:31:51 cph Exp $
  *
  * Endianness correction for Doom level structures
  * Written by Oliver Kraus <olikraus@yahoo.com>
@@ -70,7 +70,7 @@ void ConvertVertex(void)
   }
 }
 
-void ConvertLineDef(void)
+void ConvertLinedef(void)
 {
   int i, cnt;
   struct LineDef *s;
@@ -163,7 +163,6 @@ static void ConvertSSector(void)
   }
 }
 
-
 static void ConvertPnode(void)
 {
   int i, cnt;
@@ -177,21 +176,20 @@ static void ConvertPnode(void)
     s = ((struct Pnode *)l->data)+i;
     swapshort((unsigned short *)&(s->x));
     swapshort((unsigned short *)&(s->y));
-    swapshort((unsigned short *)&(s->dx));
+    swapshort((unsigned short *)&(s->dx)); 
+    swapshort((unsigned short *)&(s->rightbox[0]));
+    swapshort((unsigned short *)&(s->rightbox[1]));
+    swapshort((unsigned short *)&(s->rightbox[2]));
+    swapshort((unsigned short *)&(s->rightbox[3]));
+    swapshort((unsigned short *)&(s->leftbox[0]));
+    swapshort((unsigned short *)&(s->leftbox[1]));
+    swapshort((unsigned short *)&(s->leftbox[2]));
+    swapshort((unsigned short *)&(s->leftbox[3]));
     swapshort((unsigned short *)&(s->dy));
-    swapshort((unsigned short *)&(s->maxy1));
-    swapshort((unsigned short *)&(s->miny1));
-    swapshort((unsigned short *)&(s->maxx1));
-    swapshort((unsigned short *)&(s->minx1));
-    swapshort((unsigned short *)&(s->maxy2));
-    swapshort((unsigned short *)&(s->miny2));
-    swapshort((unsigned short *)&(s->maxx2));
-    swapshort((unsigned short *)&(s->minx2));
     swapshort((unsigned short *)&(s->chright));
     swapshort((unsigned short *)&(s->chleft));
   }
 }
-
 
 void ConvertAll(void)
 {

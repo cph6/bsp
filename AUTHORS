@@ -1,6 +1,6 @@
 Node builder for DOOM levels (c) 1998 Colin Reed, Lee Killough
-                             (c) 2000,2001 Colin Phipps
                              (c) 2001 Simon Howard
+                             (c) 2000,2001,2002 Colin Phipps
 
 BSP was originally written by Colin Reed. It was based on ideas from the Doom
 specs, by Matt Fell <msfell@aol.com>, and objects.c from the DEU v5 source
@@ -19,5 +19,5 @@ Simon "fraggle" Howard <sdh300@ecs.soton.ac.uk> - compressed blockmap code
 Jonathan Campbell <joncamp@tiac.net> - bug fixes
 Andre Majorel <amajorel@teaser.fr> - original Linux port, and other stuff
 Udo Monk <um@compuserve.com> - portability improvements and testing
-Oliver Kraus <olikraus@yahoo.com> - big endian support
+Oliver Kraus <olikraus@yahoo.com> - big endian support and bug fixes
 
