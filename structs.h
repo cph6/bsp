@@ -28,7 +28,7 @@ struct lumplist {
  struct lumplist *next;
  struct directory *dir;
  void *data;
- char islevel;
+ struct lumplist *level;
 };
 
 /*- The level structures ---------------------------------------------------*/

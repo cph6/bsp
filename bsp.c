@@ -131,6 +131,7 @@ static int OpenWadFile(char *filename)
  for (i=wad.num_entries;i--;dir++)
   {
    register struct lumplist *l=GetMemory(sizeof(*l));
+   register int islevel = 0;
 
    /* Swap dir entry to machine endianness */
    swaplong((unsigned long *)&(dir->start));
@@ -139,7 +140,7 @@ static int OpenWadFile(char *filename)
    l->dir=dir;
    l->data=NULL;
    l->next=NULL;
-   l->islevel=0;
+   l->level=NULL;
 
    if ((dir->name[0]=='E' && dir->name[2]=='M' &&
         dir->name[1]>='1' && dir->name[1]<='9' &&
@@ -152,47 +153,47 @@ static int OpenWadFile(char *filename)
         dir->name[3]>='0' && dir->name[3]<='9' &&
         dir->name[4]>='0' && dir->name[4]<='9'))
     {
-     dir->length=0;
-     l->islevel=1;                                 /* Begin new level */
+     /* Begin new level */
+     islevel=1;
      levels++;
     }
-   else
+   else if (levelp) /* The previous lump was part of a level, is this one? */
     {
-     if (levelp && (!strncmp(dir->name,"SEGS",8) ||
-                    !strncmp(dir->name,"SSECTORS",8) ||
-                    !strncmp(dir->name,"NODES",8) ||
-                    !strncmp(dir->name,"BLOCKMAP",8) ||
-                    (!noreject && !strncmp(dir->name,"REJECT",8)) ||
-                    FindDir(dir->name)))
+     if (!strncmp(dir->name,"SEGS",8) ||
+	 !strncmp(dir->name,"SSECTORS",8) ||
+	 !strncmp(dir->name,"NODES",8) ||
+	 !strncmp(dir->name,"BLOCKMAP",8) ||
+	 (!noreject && !strncmp(dir->name,"REJECT",8)))
        continue;  /* Ignore these since we're rebuilding them anyway */
 
-     if (levelp && FindDir(dir->name))
+     if (FindDir(dir->name))
       {
        Verbose("Warning: Duplicate entry \"%-8.8s\" ignored in %-.8s\n",
          dir->name, current_level->dir->name);
        continue;
       }
 
-     if (levelp && (!strncmp(dir->name,"THINGS",8) ||
+     if (!strncmp(dir->name,"THINGS",8) ||
          !strncmp(dir->name,"LINEDEFS",8) ||
          !strncmp(dir->name,"SIDEDEFS",8) ||
          !strncmp(dir->name,"VERTEXES",8) ||
          !strncmp(dir->name,"SECTORS",8) ||
-         (noreject && !strncmp(dir->name,"REJECT",8))))
+         (noreject && !strncmp(dir->name,"REJECT",8)))
       {                       /* Store in current level */
        levelp->next=l;
        levelp=l;
        continue;
       }
+     /* Otherwise, it's the end of the level. */
     }
 
-    /* Mark end of level and advance one main lump entry */
+   /* If that's the end of the level, move its list of lumps to the subtree. */
+   if (levelp) current_level->level = current_level->next;
 
-   if (levelp && !(current_level->data=current_level->next))
-     current_level->islevel=0;  /* Ignore oddly formed levels */
+   /* Is this lump the start of a new level? */
+   levelp = islevel ? l : NULL;
 
-   levelp = l->islevel ? l : NULL;
-
+   /* Add this lump or completed level to the lump list */
    if (current_level)
      current_level->next=l;
    else
@@ -200,10 +201,11 @@ static int OpenWadFile(char *filename)
    current_level=l;
   }
 
+ /*  If very last lump was a level, we have to do th same housekeeping here,
+  *  moving its lumps to the subtree and terminating the list. */
  if (levelp)
   {
-   if (!(current_level->data=current_level->next))
-     current_level->islevel=0;  /* Ignore oddly formed levels */
+   current_level->level=current_level->next;
    current_level->next=NULL;
   }
 
@@ -256,7 +258,7 @@ void add_lump(const char *name, void *data, size_t length)
    strncpy(l->dir->name,name,8);
   }
  l->dir->length=length;
- l->islevel=0;
+ l->level=NULL;
  l->data=data;
 }
 
@@ -266,7 +268,7 @@ static struct directory write_lump(struct lumplist *lump)
  if ((lump->dir->start = ftell(outfile)) == -1 || (lump->dir->length &&
    fwrite(lump->data, 1, lump->dir->length, outfile) != lump->dir->length))
    ProgError("Failure writing %-.8s\n", lump->dir->name);
- if (!lump->islevel && lump->data) { free(lump->data); lump->data = NULL; }
+ if (lump->data) { free(lump->data); lump->data = NULL; }
 
  /* This dir entry is to be written to file, so swap back to little endian */
  swaplong(&(lump->dir->start));
@@ -419,7 +421,7 @@ static void parse_options(int argc, char *argv[])
 
 int main(int argc,char *argv[])
 {
- struct lumplist *lump,*l;
+ struct lumplist *lump;
  struct directory *newdirec;
  int levels;
  int using_temporary_output = 0;
@@ -444,7 +446,7 @@ int main(int argc,char *argv[])
  if (verbosity)
   Verbose("* Doom BSP node builder ver " VERSION "\n"
 	"Copyright (c)	1998 Colin Reed, Lee Killough\n"
-	"		2000 Colin Phipps <cph@lxdoom.linuxgames.com>\n\n");
+	"		2000,2002 Colin Phipps <cph@cph.demon.co.uk>\n\n");
 
  levels = OpenWadFile(testwad);		/* Opens and reads directory*/
 
@@ -484,16 +486,17 @@ int main(int argc,char *argv[])
 
  for (lump=lumplist; lump; lump=lump->next) {
   newdirec[wad.num_entries++]=write_lump(lump);
-  if (lump->islevel)
+  if (lump->level)
     {
      char current_level_name[9];
+     struct lumplist* l;
      strncpy(current_level_name,lump->dir->name,8);
      current_level_name[8] = 0;
-     DoLevel(current_level_name, current_level = lump->data);
-     sortlump((struct lumplist **) &lump->data);
-     for (l=lump->data; l; l=l->next)
+     DoLevel(current_level_name, current_level = lump->level);
+     sortlump(&lump->level);
+     for (l=lump->level; l; l=l->next)
        newdirec[wad.num_entries++]=write_lump(l);
-   }  /* if (lump->islevel) */
+   }  /* if (lump->level) */
  }
 
  if ((wad.dir_start = ftell(outfile)) == -1 ||
