@@ -39,7 +39,7 @@
 
 /* blockmap.c */
 void CreateBlockmap_old(const bbox_t bbox);
-void CreateBlockmap_better(const bbox_t bbox);
+void CreateBlockmap_compressed(const bbox_t bbox);
 extern void (*CreateBlockmap)(const bbox_t bbox);
 
 /* bsp.c */

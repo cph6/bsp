@@ -307,6 +307,9 @@ void usage(const char* path)
 	"                 Selects either the traditional nodeline choosing algorithm\n"
 	"                 (balance the tree and minimise splits) or Lee's algorithm\n"
 	"                 to minimise visplanes (try to balance distinct sector refs)\n"
+        "  -blockmap {old|comp}\n"
+        "                 Selects either the old straightforward blockmap\n"
+        "                 generation, or the new compressed blockmap code\n"
         "  -noreject      Does not clobber reject map\n"
 	"  -q             Quiet mode (only errors are printed)\n"
        );
@@ -330,7 +333,7 @@ const struct multi_option picknode_options[] = {
 void (*CreateBlockmap)(const bbox_t bbox) = CreateBlockmap_old;
 const struct multi_option blockmap_options[] = {
 {"old", "BSP v3.0 blockmap algorithm",CreateBlockmap_old},
-{"fast", "Fast compressed blockmap generation", NULL},
+{"comp", "Compressed blockmap", CreateBlockmap_compressed},
 {NULL,NULL,NULL},
 };
 
@@ -367,7 +370,7 @@ static void parse_options(int argc, char *argv[])
 
 		while (p->tag) {
 			if (!strcmp(p->tag,opt)) {
-				(*(void**)opt) = p->value;
+				*(void**)(tab[i].var) = p->value;
 				Verbose("%s: %s\n",tab[i].option, p->text);
 				break;
 			}
