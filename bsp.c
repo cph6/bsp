@@ -297,20 +297,42 @@ static void sortlump(struct lumplist **link)
 
 void usage(const char* path)
 {
- printf("\nThis Node builder was created from the basic theory stated in DEU5 (OBJECTS.C)\n"
+ printf("\nBSP v" VERSION "\n"
         "\nSee the file AUTHORS for a complete list of credits and contributors\n"
-        "\nUsage: %s [options] input.wad [[-o] <output.wad>]\n"
+        "\nUsage: bsp [options] input.wad [[-o] <output.wad>]\n"
         "       (If no output.wad is specified, tmp.wad is written)\n\n"
         "Options:\n\n"
         "  -factor <nnn>  Changes the cost assigned to SEG splits\n"
-        "  -vp            Attempts to prevent visplane overflows\n"
+        "  -picknode {traditional|visplane}\n"
+	"                 Selects either the traditional nodeline choosing algorithm\n"
+	"                 (balance the tree and minimise splits) or Lee's algorithm\n"
+	"                 to minimise visplanes (try to balance distinct sector refs)\n"
         "  -noreject      Does not clobber reject map\n"
 	"  -q             Quiet mode (only errors are printed)\n"
-       ,path);
+       );
  exit(1);
 }
 
 static int quiet;
+
+struct multi_option {
+	const char *tag;
+	const char *text;
+	void       *value;
+};
+
+const struct multi_option picknode_options[] = {
+{"traditional", "Optimising for SEG splits and balance",PickNode_traditional},
+{"visplane", "Optimising for fewest visplanes", PickNode_visplane},
+{NULL,NULL,NULL},
+};
+
+void (*CreateBlockmap)(const bbox_t bbox) = CreateBlockmap_old;
+const struct multi_option blockmap_options[] = {
+{"old", "BSP v3.0 blockmap algorithm",CreateBlockmap_old},
+{"fast", "Fast compressed blockmap generation", NULL},
+{NULL,NULL,NULL},
+};
 
 static void parse_options(int argc, char *argv[])
 {
@@ -318,8 +340,10 @@ static void parse_options(int argc, char *argv[])
  static const struct {
    const char *option;
    void *var;
-   enum {NONE, STRING, INT} arg;
- } tab[]= { {"-vp", &visplane, NONE},
+   enum {NONE, STRING, INT, MULTI} arg;
+   const struct multi_option* opts;
+ } tab[]= { {"-picknode", &PickNode, MULTI, picknode_options},
+            {"-blockmap", &CreateBlockmap, MULTI, blockmap_options},
             {"-noreject", &noreject, NONE},
             {"-q", &quiet, NONE},
             {"-factor", &factor, INT},
@@ -334,24 +358,37 @@ static void parse_options(int argc, char *argv[])
      for (;;)
        if (!strcmp(*argv,tab[--i].option))
         {
-         if (tab[i].arg==INT)
-           if (--argc)
+         if (tab[i].arg != NONE && !--argc) usage(argv[0]);
+         switch (tab[i].arg) {
+	 case MULTI:
+	   {
+		const struct multi_option* p = tab[i].opts;
+		const char* opt = *++argv;
+
+		while (p->tag) {
+			if (!strcmp(p->tag,opt)) {
+				(*(void**)opt) = p->value;
+				Verbose("%s: %s\n",tab[i].option, p->text);
+				break;
+			}
+			p++;
+		}
+	   }
+	   break;
+         case INT:
             {
              char *end;
              *(int *) tab[i].var=strtol(*++argv,&end,0);
              if (*end || factor<0)
                usage(argv[0]);
             }
-           else
-             usage(argv[0]);
-         else
-	   if (tab[i].arg==STRING)
-	     if (--argc)
-	       *(char **) tab[i].var = *++argv;
-	     else
-	       usage(argv[0]);
-	   else
-	     ++*(int *) tab[i].var;
+           break;
+         case STRING:
+	   *(char **) tab[i].var = *++argv;
+           break;
+	 case NONE:
+	     ++*(int *) tab[i].var; break;
+         }
          break;
         }
        else
