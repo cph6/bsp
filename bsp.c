@@ -282,27 +282,18 @@ static void sortlump(struct lumplist **link)
 }
 
 
-void usage(void)
+void usage(const char* path)
 {
  printf("\nThis Node builder was created from the basic theory stated in DEU5 (OBJECTS.C)\n"
-        "\nCredits should go to :-\n"
-        "Matt Fell      (msfell@aol.com) for the Doom Specs.\n"
-        "Raphael Quinet (Raphael.Quinet@eed.ericsson.se) for DEU and the original idea.\n"
-        "Mark Harrison  (harrison@lclark.edu) for finding a bug in 1.1x\n"
-        "Jim Flynn      (jflynn@pacbell.net) for many good ideas and encouragement.\n"
-        "Jan Van der Veken for finding invisible barrier bug.\n"
-#ifdef MSDOS
-        "\nUsage: BSP [options] input.wad [[-o] <output.wad>]\n"
-#else
-        "\nUsage: BSP [options] input.wad [-o <output.wad>]\n"
-#endif
-        "       (If no output.wad is specified, TMP.WAD is written)\n\n"
+        "\nSee the file AUTHORS for a complete list of credits and contributors\n"
+        "\nUsage: %s [options] input.wad [[-o] <output.wad>]\n"
+        "       (If no output.wad is specified, tmp.wad is written)\n\n"
         "Options:\n\n"
         "  -factor <nnn>  Changes the cost assigned to SEG splits\n"
         "  -vp            Attempts to prevent visplane overflows\n"
         "  -noreject      Does not clobber reject map\n"
-	"  -q             Quiet mode (only errors are printed\n"
-       );
+	"  -q             Quiet mode (only errors are printed)\n"
+       ,path);
  exit(1);
 }
 
@@ -336,16 +327,16 @@ static void parse_options(int argc, char *argv[])
              char *end;
              *(int *) tab[i].var=strtol(*++argv,&end,0);
              if (*end || factor<0)
-               usage();
+               usage(argv[0]);
             }
            else
-             usage();
+             usage(argv[0]);
          else
 	   if (tab[i].arg==STRING)
 	     if (--argc)
 	       *(char **) tab[i].var = *++argv;
 	     else
-	       usage();
+	       usage(argv[0]);
 	   else
 	     ++*(int *) tab[i].var;
          break;
@@ -353,24 +344,20 @@ static void parse_options(int argc, char *argv[])
        else
          if (!i)
           {
-           usage();
+           usage(argv[0]);
            break;
           }
     }
    else
-#ifdef MSDOS
      if (nf<2)
-#else
-     if (nf<1)
-#endif
        fnames[nf++]=*argv;
      else
-       usage();
+       usage(argv[0]);
 
  testwad = fnames[0];                          /* Get input name*/
 
  if (!testwad || factor<0)
-   usage();
+   usage(argv[0]);
 
  outwad = fnames[1] ? fnames[1] : "tmp.wad";   /* Get output name*/
 }
