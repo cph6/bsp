@@ -1,4 +1,6 @@
-# $Id: Makefile.am,v 1.1 2000/08/24 21:38:53 cph Exp $
+# $Id: Makefile.am,v 1.2 2000/08/25 20:41:29 cph Exp $
+
+SUBDIRS = test-wads
 
 bin_PROGRAMS=bsp
 
