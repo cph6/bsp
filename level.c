@@ -64,16 +64,6 @@ static long     blockptrs_size;
 
 unsigned char  *SectorHits;
 
-short           lminx;
-short           lmaxx;
-short           lminy;
-short           lmaxy;
-
-static short    mapminx;
-static short    mapmaxx;
-static short    mapminy;
-static short    mapmaxy;
-
 long            psx, psy, pex, pey, pdx, pdy;
 long            lsx, lsy, lex, ley;
 
@@ -87,8 +77,6 @@ static void     GetSectors(void);
 
 static struct Seg *CreateSegs();
 
-static long     CreateBlockmap(void);
-
 static int      IsLineDefInside(int, int, int, int, int);
 
 /*--------------------------------------------------------------------------*/
@@ -96,8 +84,7 @@ static int      IsLineDefInside(int, int, int, int, int);
 /* and comparing the vertices at both ends. */
 /*--------------------------------------------------------------------------*/
 
-void 
-FindLimits(struct Seg * ts)
+void FindLimits(struct Seg * ts, bbox_t box)
 {
 	int             minx = INT_MAX, miny = INT_MAX, maxx = INT_MIN,
 	                maxy = INT_MIN;
@@ -127,15 +114,10 @@ FindLimits(struct Seg * ts)
 			break;
 		ts = ts->next;
 	}
-	lminx = minx;
-	lmaxx = maxx;
-	lminy = miny;
-	lmaxy = maxy;
+	/* cph - top, bottom, left, right */
+	box[BB_TOP] = maxy; box[BB_BOTTOM] = miny;
+	box[BB_LEFT] = minx; box[BB_RIGHT] = maxx;
 }
-
-/*--------------------------------------------------------------------------*/
-/* Find limits from a list of segs, does this by stepping through the segs */
-/* and comparing the vertices at both ends. */
 
 /*--------------------------------------------------------------------------*/
 
@@ -366,7 +348,7 @@ IsLineDefInside(int ldnum, int xmin, int ymin, int xmax, int ymax)
 /*- Create blockmap --------------------------------------------------------*/
 
 static long 
-CreateBlockmap()
+CreateBlockmap(const bbox_t bbox)
 {
 	long            blockoffs = 0;
 	int             x, y, n;
@@ -374,10 +356,10 @@ CreateBlockmap()
 
 	Verbose("Creating Blockmap... ");
 
-	blockhead.minx = mapminx & -8;
-	blockhead.miny = mapminy & -8;
-	blockhead.xblocks = ((mapmaxx - (mapminx & -8)) / 128) + 1;
-	blockhead.yblocks = ((mapmaxy - (mapminy & -8)) / 128) + 1;
+	blockhead.minx = bbox[BB_LEFT] & -8;
+	blockhead.miny = bbox[BB_BOTTOM] & -8;
+	blockhead.xblocks = ((bbox[BB_RIGHT] - (bbox[BB_LEFT] & -8)) / 128) + 1;
+	blockhead.yblocks = ((bbox[BB_TOP] - (bbox[BB_BOTTOM] & -8)) / 128) + 1;
 
 	blockptrs_size = (blockhead.xblocks * blockhead.yblocks) * 2;
 	blockptrs = GetMemory(blockptrs_size);
@@ -437,14 +419,8 @@ ReverseNodes(struct Node * tn)
 	pn->y = tn->y;
 	pn->dx = tn->dx;
 	pn->dy = tn->dy;
-	pn->maxy1 = tn->maxy1;
-	pn->miny1 = tn->miny1;
-	pn->minx1 = tn->minx1;
-	pn->maxx1 = tn->maxx1;
-	pn->maxy2 = tn->maxy2;
-	pn->miny2 = tn->miny2;
-	pn->minx2 = tn->minx2;
-	pn->maxx2 = tn->maxx2;
+	memcpy(pn->leftbox , tn->leftbox , sizeof(pn->leftbox ));
+	memcpy(pn->rightbox, tn->rightbox, sizeof(pn->rightbox));
 	pn->chright = tn->chright;
 	pn->chleft = tn->chleft;
 
@@ -476,6 +452,7 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 {
 	struct Seg     *tsegs;
 	static struct Node *nodelist;
+	bbox_t mapbound;
 
 	Verbose("\nBuilding nodes on %-.8s\n\n", current_level_name);
 
@@ -497,18 +474,15 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 
 	tsegs = CreateSegs();	/* Initially create segs */
 
-	FindLimits(tsegs);	/* Find limits of vertices */
+	FindLimits(tsegs,mapbound);	/* Find limits of vertices */
 
-	mapminx = lminx;	/* store as map limits */
-	mapmaxx = lmaxx;
-	mapminy = lminy;
-	mapmaxy = lmaxy;
-
-	Verbose("Map goes from (%d,%d) to (%d,%d)\n", lminx, lminy, lmaxx, lmaxy);
+	Verbose("Map goes from (%d,%d) to (%d,%d)\n", 
+		mapbound[BB_TOP   ],mapbound[BB_LEFT  ],
+		mapbound[BB_BOTTOM],mapbound[BB_RIGHT ]);
 
 	SectorHits = GetMemory(num_sects);
 
-	nodelist = CreateNode(tsegs);	/* recursively create nodes */
+	nodelist = CreateNode(tsegs,mapbound);	/* recursively create nodes */
 
 	Verbose("%lu NODES created, with %lu SSECTORS.\n", num_nodes, num_ssectors);
 
@@ -531,7 +505,7 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 		add_lump("REJECT", data, reject_size);
 	}
 	{
-		long            blockmap_size = CreateBlockmap();
+		long            blockmap_size = CreateBlockmap(mapbound);
 		char           *data = GetMemory(blockmap_size + blockptrs_size + 8);
 		memcpy(data, &blockhead, 8);
 		swapshort((unsigned short *)data+0);

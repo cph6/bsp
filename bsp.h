@@ -16,8 +16,9 @@
 #include <alloc.h>
 #endif
 
+/* cph - from FreeBSD math.h: */
 #ifndef M_PI
-#define M_PI 3.14159
+#define M_PI 3.14159265358979323846
 #endif
 
 /*- boolean constants ------------------------------------------------------*/
@@ -38,7 +39,7 @@
 
 /* bsp.c */
 void progress(void);
-void FindLimits(struct Seg *);
+void FindLimits(struct Seg *, bbox_t box);
 int SplitDist(struct Seg *ts);
 
 extern char *unlinkwad;
@@ -86,23 +87,21 @@ extern long num_psegs;
 
 extern long num_nodes;
 
-extern short lminx, lmaxx, lminy, lmaxy;
-
 extern unsigned char *SectorHits;
 
 extern long psx,psy,pex,pey,pdx,pdy;
 extern long lsx,lsy,lex,ley;
 
 /* makenode.c */
-struct Node *CreateNode(struct Seg *);
+struct Node *CreateNode(struct Seg *, const bbox_t bbox);
 unsigned ComputeAngle(int,int);
 
 /* picknode.c */
 extern int factor;
 
-struct Seg *PickNode_traditional(struct Seg *);
-struct Seg *PickNode_visplane(struct Seg *);
-extern struct Seg *(*PickNode)(struct Seg *);
+struct Seg *PickNode_traditional(struct Seg *, const bbox_t bbox);
+struct Seg *PickNode_visplane(struct Seg *, const bbox_t bbox);
+extern struct Seg *(*PickNode)(struct Seg *, const bbox_t bbox);
 int DoLinesIntersect();
 void ComputeIntersection(short int *outx,short int *outy);
 

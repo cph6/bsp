@@ -47,7 +47,7 @@ char* unlinkwad;
 
 static struct directory *direc = NULL;
 
-struct Seg *(*PickNode)(struct Seg *)=PickNode_traditional;
+struct Seg *(*PickNode)(struct Seg *, const bbox_t bbox)=PickNode_traditional;
 static int visplane;
 static int noreject;
 
