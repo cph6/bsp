@@ -17,7 +17,7 @@ Mark Harrison <harrison@lclark.edu>  - for finding a bug in 1.1x
 Jan Van der Veken - finding the invisible barrier bug
 Simon "fraggle" Howard <sdh300@ecs.soton.ac.uk> - compressed blockmap code
 Jonathan Campbell <joncamp@tiac.net> - bug fixes
-Andre Majorel <amajorel@teaser.fr> - original Linux port, and other stuff
-Udo Monk <um@compuserve.com> - portability improvements and testing
+Andre Majorel - original Linux port, and other stuff
+Udo Munk <um@compuserve.com> - portability improvements and testing
 Oliver Kraus <olikraus@yahoo.com> - big endian support and bug fixes
 
