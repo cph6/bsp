@@ -25,4 +25,4 @@ dnl Checks for library functions.
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(strtol)
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile test-wads/Makefile)
