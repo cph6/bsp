@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.13 2002/07/25 17:17:25 cph Exp $
+# $Id: Makefile.am,v 1.14 2002/07/27 18:03:37 cph Exp $
 
 SUBDIRS = test-wads DOS Win32
 
@@ -20,6 +20,6 @@ dos	:	$(DOCS)
 	-mkdir dos-dist
 	for fn in $(DOCS); do perl -p -e 's/$$/\r/' < $$fn > `echo dos-dist/$$fn | perl -p -e 's/(.txt)?$$/.txt/'`; done
 
-README	:	index.html
+make-readme	:	index.html
 	links -dump index.html > README
 
