@@ -87,7 +87,6 @@ static void     GetSectors(void);
 
 static struct Seg *CreateSegs();
 
-static void     ReverseNodes(struct Node *);
 static long     CreateBlockmap(void);
 
 static int      IsLineDefInside(int, int, int, int, int);
@@ -415,16 +414,18 @@ CreateBlockmap()
 }
 
 /*--------------------------------------------------------------------------*/
+/* Converts the nodes from a btree into the array format for inclusion in 
+ * the .wad. Frees the btree as it goes */
 
-static void 
+static short 
 ReverseNodes(struct Node * tn)
 {
 	struct Pnode   *pn;
 
-	tn->chright = tn->nextr ? ReverseNodes(tn->nextr), tn->nextr->node_num :
+	tn->chright = tn->nextr ? ReverseNodes(tn->nextr) :
 		tn->chright | 0x8000;
 
-	tn->chleft = tn->nextl ? ReverseNodes(tn->nextl), tn->nextl->node_num :
+	tn->chleft = tn->nextl ? ReverseNodes(tn->nextl) :
 		tn->chleft | 0x8000;
 
 	pn = pnodes + pnode_indx++;
@@ -443,7 +444,11 @@ ReverseNodes(struct Node * tn)
 	pn->maxx2 = tn->maxx2;
 	pn->chright = tn->chright;
 	pn->chleft = tn->chleft;
-	tn->node_num = num_pnodes++;
+
+	/* Free the node, it's in our array now */
+	memset(tn,0,sizeof *tn);
+	free(tn);
+	return num_pnodes++;
 }
 
 /* Height of nodes */
