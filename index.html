@@ -7,7 +7,7 @@
   </rdf:RDF>
  </head>
  <body>
-<!-- $Id: index.html,v 1.4 2002/07/25 17:18:24 cph Exp $ -->
+<!-- $Id: index.html,v 1.5 2002/07/27 18:22:20 cph Exp $ -->
   <p>This is v5.1 of BSP, one of the best node builders for Doom.</p>
   <p>BSP is currently maintained by <a
 href="mailto:cph@cph.demon.co.uk">Colin Phipps</a>.
@@ -54,7 +54,7 @@ of extra line splits, but this will generally cause a less balanced node
 tree. The default is usually fine.</dd>
     <dt>-q</dt><dd>Causes BSP to run quietly, only printing output if there are errors or warnings.</dd>
     <dt>-picknode</dt><dd>Determines the nodeline selection algorithm. The &quot;traditional&quot; option is best for most Doom levels. For levels which are intended for the original <code>doom2.exe</code> and suffer from some marginal visplane overflows, the &quot;visplane&quot; algorithm is designed to minimise these and may help in some cases. See the included <code>visplane.txt</code> for more information.</dd>
-    <dt>-blockmap</dt><dd>Selects the blockmap generation algorithm. The default &quot;old&quot; algorithm generates a simple and correct blockmap. The newer &quot;comp&quot; version produces a blockmap with far lower redundancy by reusing identical blocks, which should be equivalent in actual use. The &quot;comp&quot; version is therefore better but it relatively untested so is not yet enabled by default.</dd>
+    <dt>-blockmap</dt><dd>Selects the blockmap generation algorithm. The default &quot;old&quot; algorithm generates a simple and correct blockmap. The newer &quot;comp&quot; version produces a compressed blockmap, by reusing identical blocks  which should be equivalent in actual use. The &quot;comp&quot; version is therefore better but it relatively untested so is not yet enabled by default.</dd>
    </dl>
    <p><i>inwad</i> is the input WAD file. This may contain any number of
 levels and other lumps. The nodes and associated data resources will be built
