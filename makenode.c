@@ -1,5 +1,5 @@
 /*- MAKENODE.C --------------------------------------------------------------*
- $Id: makenode.c,v 1.3 2000/08/26 10:38:35 cph Exp $
+ $Id: makenode.c,v 1.4 2000/08/26 17:20:35 cph Exp $
  Recursively create nodes and return the pointers.
 *---------------------------------------------------------------------------*/
 #include "structs.h"
@@ -18,7 +18,8 @@ int SplitDist(struct Seg *ts)
 		dx = (double)(vertices[linedefs[ts->linedef].start].x)-(vertices[ts->start].x);
 		dy = (double)(vertices[linedefs[ts->linedef].start].y)-(vertices[ts->start].y);
 
-		if(dx == 0 && dy == 0) printf("Trouble in SplitDist %f,%f\n",dx,dy);
+		if(dx == 0 && dy == 0) 
+			fprintf(stderr,"Trouble in SplitDist %f,%f\n",dx,dy);
 		t = sqrt((dx*dx) + (dy*dy));
 		return (int)t;
 		}
@@ -27,7 +28,8 @@ int SplitDist(struct Seg *ts)
 		dx = (double)(vertices[linedefs[ts->linedef].end].x)-(vertices[ts->start].x);
 		dy = (double)(vertices[linedefs[ts->linedef].end].y)-(vertices[ts->start].y);
 
-		if(dx == 0 && dy == 0) printf("Trouble in SplitDist %f,%f\n",dx,dy);
+		if(dx == 0 && dy == 0) 
+			fprintf(stderr,"Trouble in SplitDist %f,%f\n",dx,dy);
 		t = sqrt((dx*dx) + (dy*dy));
 		return (int)t;
 		}

@@ -58,7 +58,7 @@ static FILE *infile;
 void progress()
 {
 	if((verbosity > 1) && !((++pcnt)&31))
-		printf("%c\b","/-\\|"[((pcnt)>>5)&3]);
+		Verbose("%c\b","/-\\|"[((pcnt)>>5)&3]);
 }
 
 /*- get the directory from a wad file --------------------------------------*/
@@ -79,7 +79,7 @@ static int OpenWadFile(char *filename)
      || wad.type[2]!='A' || wad.type[3]!='D')
    ProgError("%s does not appear to be a wad file -- bad magic", filename);
 
- printf("Opened %cWAD file : %s. %lu dir entries at 0x%lX.\n",
+ Verbose("Opened %cWAD file : %s. %lu dir entries at 0x%lX.\n",
 	wad.type[0],filename,wad.num_entries,wad.dir_start);
 
  direc = GetMemory(sizeof(struct directory) * wad.num_entries);
@@ -124,7 +124,7 @@ static int OpenWadFile(char *filename)
 
      if (levelp && FindDir(dir->name))
       {
-       printf("Warning: Duplicate entry \"%-8.8s\" ignored in %-.8s\n",
+       Verbose("Warning: Duplicate entry \"%-8.8s\" ignored in %-.8s\n",
          dir->name, current_level->dir->name);
        continue;
       }
@@ -221,7 +221,7 @@ static struct directory write_lump(struct lumplist *lump)
  ReadLump(lump); /* cph - fetch into memory if not there already */
  if ((lump->dir->start = ftell(outfile)) == -1 || (lump->dir->length &&
    fwrite(lump->data, 1, lump->dir->length, outfile) != lump->dir->length))
-   printf("Warning: Consistency check failure writing %-.8s\n", lump->dir->name);
+   ProgError("Failure writing %-.8s\n", lump->dir->name);
  if (!lump->islevel) { free(lump->data); lump->data = NULL; }
  return *lump->dir;
 }
@@ -265,6 +265,7 @@ void usage(void)
         "  -factor <nnn>  Changes the cost assigned to SEG splits\n"
         "  -vp            Attempts to prevent visplane overflows\n"
         "  -noreject      Does not clobber reject map\n"
+	"  -q             Quiet mode (only errors are printed\n"
        );
  exit(1);
 }
@@ -364,17 +365,17 @@ int main(int argc,char *argv[])
    setbuf(stdout,NULL);
 
  if (verbosity)
-  puts("* Doom BSP node builder ver " VERSION "\n"
+  Verbose("* Doom BSP node builder ver " VERSION "\n"
 	"Copyright (c)	1998 Colin Reed, Lee Killough\n"
 	"		2000 Colin Phipps <cph@lxdoom.linuxgames.com>\n\n");
 
  levels = OpenWadFile(testwad);		/* Opens and reads directory*/
 
- printf("\nCreating nodes using tunable factor of %d\n",factor);
+ Verbose("Creating nodes using tunable factor of %d\n",factor);
 
  if (visplane)
   {
-   puts("\nTaking special measures to reduce the chances of visplane overflow");
+   Verbose("\nTaking special measures to reduce the chances of visplane overflow");
    PickNode=PickNode_visplane;
   }
 
@@ -408,14 +409,14 @@ int main(int argc,char *argv[])
 
  if ((wad.dir_start = ftell(outfile)) == -1 ||
     fwrite(newdirec,sizeof(struct directory),wad.num_entries,outfile)!=wad.num_entries)
-    puts("Warning: Consistency check failure writing lump directory");
+    ProgError("Failure writing lump directory");
 
  if (fseek(outfile, 0, SEEK_SET) || fwrite(&wad,1,12,outfile)!=12)
-    puts("Warning: Consistency check failure writing wad header");
+    ProgError("Failure writing wad header");
 
   fclose(outfile);
 
-  printf("\nSaved WAD as %s\n",outwad);
+  Verbose("\nSaved WAD as %s\n",outwad);
 
  return 0;
 }

@@ -158,7 +158,7 @@ add_seg(struct Seg * cs, int n, int fv, int tv,
 			      (double) cs->pdy * cs->pdy);
 
 	if ((cs->sector = sd->sector) == -1)
-		printf("\nWarning: Bad sidedef in linedef %d (Z_CheckHeap error)\n", n);
+		fprintf(stderr, "\nWarning: Bad sidedef in linedef %d (Z_CheckHeap error)\n", n);
 
 	cs->angle = ComputeAngle(cs->pdx, cs->pdy);
 
@@ -180,20 +180,21 @@ CreateSegs()
 	struct LineDef *l = linedefs;
 	int             n;
 
-	puts("Creating Segs ..........");
+	Verbose("Creating Segs... ");
 
 	for (n = 0; n < num_lines; n++, l++) {	/* step through linedefs and
 		 * get side *//* numbers */
 		if (l->sidedef1 != -1)
 			(cs = add_seg(cs, n, l->start, l->end, &fs, sidedefs + l->sidedef1))->flip = 0;
 		else
-			printf("\nWarning: Linedef %d has no right sidedef\n", n);
+			fprintf(stderr,"\nWarning: Linedef %d has no right sidedef\n", n);
 
 		if (l->sidedef2 != -1)
 			(cs = add_seg(cs, n, l->end, l->start, &fs, sidedefs + l->sidedef2))->flip = 1;
 		else if (l->flags & 4)
-			printf("\nWarning: Linedef %d is 2s but has no left sidedef\n", n);
+			fprintf(stderr,"\nWarning: Linedef %d is 2s but has no left sidedef\n", n);
 	}
+	Verbose("done.\n");
 	return fs;
 }
 
@@ -263,13 +264,13 @@ GetVertexes(void)
 
 	free(translate);
 
-	printf("Loaded %ld vertices", num_verts);
+	Verbose("Loaded %ld vertices", num_verts);
 	if (num_verts > used_verts)
-		printf(", but %ld were unused\n(this is normal if the nodes were built before).\n",
+		Verbose(", but %ld were unused\n(this is normal if the nodes were built before).\n",
 		       num_verts - used_verts);
 	else
-		puts(".");
-	printf(i ? "%ld zero-length lines were removed.\n" : "\n", i);
+		Verbose(".");
+	Verbose(i ? "%ld zero-length lines were removed.\n" : "\n", i);
 	num_verts = used_verts;
 	if (!num_verts)
 		ProgError("Couldn't find any used Vertices");
@@ -372,6 +373,8 @@ CreateBlockmap()
 	int             x, y, n;
 	int             blocknum = 0;
 
+	Verbose("Creating Blockmap... ");
+
 	blockhead.minx = mapminx & -8;
 	blockhead.miny = mapminy & -8;
 	blockhead.xblocks = ((mapmaxx - (mapminx & -8)) / 128) + 1;
@@ -407,6 +410,7 @@ CreateBlockmap()
 			blocknum++;
 		}
 	}
+	Verbose("done.\n");
 	return blockoffs * 2;
 }
 
@@ -465,7 +469,7 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 	struct Seg     *tsegs;
 	static struct Node *nodelist;
 
-	printf("\nBuilding nodes on %-.8s\n\n", current_level_name);
+	Verbose("\nBuilding nodes on %-.8s\n\n", current_level_name);
 
 	blockptrs = NULL;
 	blocklists = NULL;
@@ -489,19 +493,17 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 	mapminy = lminy;
 	mapmaxy = lmaxy;
 
-	printf("Map goes from (%d,%d) to (%d,%d)\n", lminx, lminy, lmaxx, lmaxy);
+	Verbose("Map goes from (%d,%d) to (%d,%d)\n", lminx, lminy, lmaxx, lmaxy);
 
 	SectorHits = GetMemory(num_sects);
 
 	nodelist = CreateNode(tsegs);	/* recursively create nodes */
 
-	fputs(" \n", stderr);
+	Verbose("%lu NODES created, with %lu SSECTORS.\n", num_nodes, num_ssectors);
 
-	printf("%lu NODES created, with %lu SSECTORS.\n", num_nodes, num_ssectors);
+	Verbose("Found %lu used vertices\n", num_verts);
 
-	printf("Found %lu used vertices\n", num_verts);
-
-	printf("Heights of left and right subtrees = (%u,%u)\n",
+	Verbose("Heights of left and right subtrees = (%u,%u)\n",
 	       height(nodelist->nextl), height(nodelist->nextr));
 
 	vertlmp->dir->length = num_verts * sizeof(struct Vertex);
@@ -516,7 +518,8 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 		void           *data = GetMemory(reject_size);
 		memset(data, 0, reject_size);
 		add_lump("REJECT", data, reject_size);
-	} {
+	}
+	{
 		long            blockmap_size = CreateBlockmap();
 		char           *data = GetMemory(blockmap_size + blockptrs_size + 8);
 		memcpy(data, &blockhead, 8);
@@ -525,7 +528,6 @@ DoLevel(const char *current_level_name, struct lumplist * current_level)
 		free(blockptrs);
 		free(blocklists);
 		add_lump("BLOCKMAP", data, blockmap_size + blockptrs_size + 8);
-		puts("Completed blockmap building");
 	}
 
 	pnodes = GetMemory(sizeof(struct Pnode) * num_nodes);
