@@ -1,5 +1,5 @@
 /*- MAKENODE.C --------------------------------------------------------------*
- $Id: makenode.c,v 1.4 2000/08/26 17:20:35 cph Exp $
+ $Id: makenode.c,v 1.5 2000/08/27 19:04:43 cph Exp $
  Recursively create nodes and return the pointers.
 *---------------------------------------------------------------------------*/
 #include "structs.h"
@@ -310,6 +310,7 @@ static inline int IsItConvex( struct Seg *ts)
 
 static inline int CreateSSector(struct Seg *tmps)
 {
+	struct Seg *next;
 	int n;
 
 	if(num_ssectors == 0)
@@ -327,7 +328,7 @@ static inline int CreateSSector(struct Seg *tmps)
 	
 /*	printf("\n");*/
 
-	for(;tmps;tmps=tmps->next)
+	for(;tmps;tmps=next)
 		{
 		if(num_psegs == 0)
 			{
@@ -354,6 +355,8 @@ static inline int CreateSSector(struct Seg *tmps)
 			psegs[num_psegs].dist);
 */
 		num_psegs++;
+		next = tmps->next;
+		free(tmps); /* This seg is done */
 		}
 
 	ssectors[num_ssectors].num = num_psegs-n;
