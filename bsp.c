@@ -31,7 +31,7 @@
 
 static FILE *outfile;
 static char *testwad;
-static char *outwad;
+char *outwad;
 
 static struct directory *direc = NULL;
 
@@ -47,7 +47,6 @@ static struct wad_header wad;
 
 /*- Prototypes -------------------------------------------------------------*/
 
-static void OpenWadFile(char *);
 static void GetThings(void);
 static void GetVertexes(void);
 static void GetLinedefs(void);
@@ -64,6 +63,8 @@ static long CreateBlockmap(void);
 static int IsLineDefInside(int, int, int, int, int);
 static int CreateSSector(struct Seg *);
 
+static FILE *infile;
+
 /*--------------------------------------------------------------------------*/
 
 void progress()
@@ -75,12 +76,12 @@ void progress()
 /*- get the directory from a wad file --------------------------------------*/
 /* rewritten by Lee Killough to support multiple levels and extra lumps */
 
-static void OpenWadFile(char *filename)
+static int OpenWadFile(char *filename)
 {
  long i;
  register struct directory *dir;
  struct lumplist *levelp=NULL;
- FILE *infile;
+ int levels = 0;
 
  if (!(infile = fopen(filename,"rb")))
    ProgError("Error: Cannot open WAD file %s", filename);
@@ -121,6 +122,7 @@ static void OpenWadFile(char *filename)
     {
      dir->length=0;
      l->islevel=1;                                 /* Begin new level */
+     levels++;
     }
    else
     {
@@ -137,15 +139,6 @@ static void OpenWadFile(char *filename)
        printf("Warning: Duplicate entry \"%-8.8s\" ignored in %-.8s\n",
          dir->name, current_level->dir->name);
        continue;
-      }
-
-     if (dir->length)
-      {
-       l->data=GetMemory(dir->length);
-       if (fseek(infile,dir->start,0) ||
-           fread(l->data,1,dir->length,infile) != dir->length)
-         printf("Warning: Trouble reading wad directory entry \"%-8.8s\" in %-.8s\n",
-                dir->name, current_level->dir->name);
       }
 
      if (levelp && (!strncmp(dir->name,"THINGS",8) ||
@@ -181,7 +174,8 @@ static void OpenWadFile(char *filename)
      current_level->islevel=0;  /* Ignore oddly formed levels */
    current_level->next=NULL;
   }
- fclose(infile);
+
+  return levels;
 }
 
 /*- find the pointer to a resource -----------------------*/
@@ -192,6 +186,21 @@ struct lumplist *FindDir(const char *name)
  while (l && strncmp(l->dir->name,name,8))
    l=l->next;
  return l;
+}
+
+/* ReadLump - read a lump into memory */
+
+void* ReadLump(struct lumplist *l)
+{
+  struct directory *dir = l->dir;
+  if (!l->data && dir->length) {
+    l->data=GetMemory(dir->length);
+    if (fseek(infile,dir->start,0) ||
+        fread(l->data,1,dir->length,infile) != dir->length)
+         ProgError("Unable to read wad directory entry \"%-8.8s\" in %-.8s\n",
+                dir->name, current_level->dir->name);
+  }
+  return l->data;
 }
 
 /* Add a lump to current level
@@ -221,9 +230,11 @@ void add_lump(const char *name, void *data, size_t length)
 
 static struct directory write_lump(struct lumplist *lump)
 {
- if (ftell(outfile)!=lump->dir->start || (lump->dir->length &&
+ ReadLump(lump); /* cph - fetch into memory if not there already */
+ if ((lump->dir->start = ftell(outfile)) == -1 || (lump->dir->length &&
    fwrite(lump->data, 1, lump->dir->length, outfile) != lump->dir->length))
    printf("Warning: Consistency check failure writing %-.8s\n", lump->dir->name);
+ if (!lump->islevel) { free(lump->data); lump->data = NULL; }
  return *lump->dir;
 }
 
@@ -342,6 +353,7 @@ int main(int argc,char *argv[])
 {
  struct lumplist *lump,*l;
  struct directory *newdirec;
+ int levels;
 
  setbuf(stdout,NULL);
 
@@ -349,7 +361,7 @@ int main(int argc,char *argv[])
 
  parse_options(argc,argv);
 
- OpenWadFile(testwad);		/* Opens and reads directory*/
+ levels = OpenWadFile(testwad);		/* Opens and reads directory*/
 
  printf("\nCreating nodes using tunable factor of %d\n",factor);
 
@@ -359,37 +371,6 @@ int main(int argc,char *argv[])
    PickNode=PickNode_visplane;
   }
 
- for (lump=lumplist; lump; lump=lump->next)
-  if (lump->islevel)
-    {
-     char current_level_name[9];
-     strncpy(current_level_name,lump->dir->name,8);
-     current_level_name[8] = 0;
-     DoLevel(current_level_name, current_level = lump->data);
-   }  /* if (lump->islevel) */
-
- {
-  long offs=12;
-  wad.num_entries=0;
-  for (lump=lumplist; lump; lump=lump->next)
-   {
-    lump->dir->start=offs;
-    offs+=lump->dir->length;
-    wad.num_entries++;
-    if (lump->islevel)
-     {
-      sortlump((struct lumplist **) &lump->data);
-      for (l=lump->data; l; l=l->next)
-       {
-        l->dir->start=offs;
-        offs+=l->dir->length;
-        wad.num_entries++;
-       }
-     }
-   }
-
-  newdirec = GetMemory(wad.num_entries*sizeof(struct directory));
-
   if (!(outfile=fopen(outwad,"wb")))
    {
     fputs("Error: Could not open output PWAD file ",stderr);
@@ -397,27 +378,38 @@ int main(int argc,char *argv[])
     exit(1);
    }
 
-  wad.dir_start=offs;
-  if (fwrite(&wad,1,12,outfile)!=12)
-    puts("Warning: Consistency check failure writing wad header");
+ /* Allocate space for existing lumps plus some extra for each level */
+ newdirec = GetMemory((wad.num_entries + 10*levels)*sizeof(struct directory));
 
-  for (offs=0,lump=lumplist; lump; lump=lump->next)
-   {
-    newdirec[offs++]=write_lump(lump);
-    if (lump->islevel)
-      for (l=lump->data; l; l=l->next)
-        newdirec[offs++]=write_lump(l);
-   }
+ wad.num_entries = 0;
 
-  if (ftell(outfile)!=wad.dir_start ||
+ fwrite("xxxxxxxxxxxx",sizeof wad,1,outfile);
+
+ for (lump=lumplist; lump; lump=lump->next) {
+  newdirec[wad.num_entries++]=write_lump(lump);
+  if (lump->islevel)
+    {
+     char current_level_name[9];
+     strncpy(current_level_name,lump->dir->name,8);
+     current_level_name[8] = 0;
+     DoLevel(current_level_name, current_level = lump->data);
+     sortlump((struct lumplist **) &lump->data);
+     for (l=lump->data; l; l=l->next)
+       newdirec[wad.num_entries++]=write_lump(l);
+   }  /* if (lump->islevel) */
+ }
+
+ if ((wad.dir_start = ftell(outfile)) == -1 ||
     fwrite(newdirec,sizeof(struct directory),wad.num_entries,outfile)!=wad.num_entries)
     puts("Warning: Consistency check failure writing lump directory");
+
+ if (fseek(outfile, 0, SEEK_SET) || fwrite(&wad,1,12,outfile)!=12)
+    puts("Warning: Consistency check failure writing wad header");
+
   fclose(outfile);
 
-  if (offs!=wad.num_entries)
-    puts("Warning: Lump directory count consistency check failure");
   printf("\nSaved WAD as %s\n",outwad);
- }
+
  return 0;
 }
 
