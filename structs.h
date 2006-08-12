@@ -7,8 +7,8 @@
 struct wad_header 					/* Linked wad files list.*/
 {
 	char type[4];
-	int32_t num_entries;
-	int32_t dir_start;
+	uint32_t num_entries;
+	uint32_t dir_start;
 } __attribute__((packed));
 
 struct directory 						/* The directory entry header*/

@@ -118,7 +118,7 @@ static int OpenWadFile(char *filename)
   swaplong(&wad.num_entries);
   swaplong(&wad.dir_start);
 
-  Verbose("Opened %cWAD file: %s. %lu dir entries at 0x%08lX.\n",
+  Verbose("Opened %cWAD file: %s. %" PRIu32 " dir entries at 0x%08" PRIx32 ".\n",
 	wad.type[0],filename,wad.num_entries,wad.dir_start);
 
  direc = GetMemory(sizeof(struct directory) * wad.num_entries);
@@ -134,8 +134,8 @@ static int OpenWadFile(char *filename)
    register int islevel = 0;
 
    /* Swap dir entry to machine endianness */
-   swaplong((unsigned long *)&(dir->start));
-   swaplong((unsigned long *)&(dir->length));
+   swaplong(&(dir->start));
+   swaplong(&(dir->length));
 
    l->dir=dir;
    l->data=NULL;
@@ -297,6 +297,8 @@ static void sortlump(struct lumplist **link)
       }
  while (--i>=0);
 }
+
+void usage(const char* path) __attribute__((noreturn));
 
 void usage(const char* path) 
 {

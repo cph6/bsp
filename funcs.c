@@ -44,7 +44,7 @@ void *GetMemory( size_t size)
 {
    void *ret = malloc( size);
    if (!ret)
-      ProgError( "out of memory (cannot allocate %u bytes)", size);
+      ProgError( "out of memory (cannot allocate %zu bytes)", size);
    return ret;
 }
 
@@ -54,7 +54,7 @@ void *ResizeMemory( void *old, size_t size)
 {
    void *ret = realloc( old, size);
    if (!ret)
-      ProgError( "out of memory (cannot reallocate %u bytes)", size);
+      ProgError( "out of memory (cannot reallocate %zu bytes)", size);
    return ret;
 }
 
