@@ -1,5 +1,4 @@
-/* $Id: endian.c,v 1.4 2003/03/03 22:57:39 cph Exp $
- *
+/*
  * Endianness correction for Doom level structures
  * Written by Oliver Kraus <olikraus@yahoo.com>
  *
@@ -191,7 +190,7 @@ void ConvertAll(void)
 {
   Verbose("Doing endianness correction... ");
   ConvertVertex();
-  ConvertLineDef();
+  ConvertLinedef();
   ConvertSidedef();
   ConvertSector();
   ConvertPseg();
