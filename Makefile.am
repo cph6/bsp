@@ -1,5 +1,3 @@
-# $Id: Makefile.am,v 1.14 2002/07/27 18:03:37 cph Exp $
-
 SUBDIRS = test-wads DOS Win32
 
 man_MANS = bsp.6

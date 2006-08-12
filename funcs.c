@@ -1,5 +1,4 @@
 /*- FUNCS.C ----------------------------------------------------------------*/
-/* $Id: funcs.c,v 1.6 2001/07/21 15:10:08 cph Exp $ */
 /*- terminate the program reporting an error -------------------------------*/
 
 #include "structs.h"

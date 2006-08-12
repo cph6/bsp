@@ -1,5 +1,4 @@
 /*- MAKENODE.C --------------------------------------------------------------*
- $Id: makenode.c,v 1.8 2003/03/03 22:55:18 cph Exp $
  Recursively create nodes and return the pointers.
 *---------------------------------------------------------------------------*/
 #include "structs.h"
