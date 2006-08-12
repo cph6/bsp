@@ -142,8 +142,7 @@ add_seg(struct Seg * cs, int n, int fv, int tv,
 
 /*- initially creates all segs, one for each line def ----------------------*/
 
-static struct Seg *
-CreateSegs()
+static struct Seg* CreateSegs(void)
 {
 	struct Seg     *cs = NULL;	/* current Seg */
 	struct Seg     *fs = NULL;	/* first Seg in list */

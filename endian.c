@@ -16,24 +16,24 @@ void ConvertLinedef(void) {};
 void ConvertSidedef(void) {};
 void ConvertSector(void) {};
 
-void swapshort(unsigned short *i) {};
-void swaplong(unsigned long *l) {};
+void swapshort(uint16_t *i) {};
+void swaplong(uint32_t *l) {};
 void swapint(unsigned int *l) {};
 
 #else
 
-void swapshort(unsigned short *i)
+void swapshort(uint16_t *i)
 {
-  unsigned short int t;
+  uint16_t t;
 
   ((char *) &t)[ 0] = ((char *) i)[ 1];
   ((char *) &t)[ 1] = ((char *) i)[ 0];
   *i = t;
 }
 
-void swaplong(unsigned long *l)
+void swaplong(uint32_t *l)
 {
-  unsigned long t;
+  uint32_t t;
 
   ((char *) &t)[ 0] = ((char *) l)[ 3];
   ((char *) &t)[ 1] = ((char *) l)[ 2];

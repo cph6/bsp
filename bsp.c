@@ -63,7 +63,7 @@ static FILE *infile;
 
 /* fcopy - function to completely copy one stream to another */
 
-void fcopy(FILE* in, FILE* out)
+static void fcopy(FILE* in, FILE* out)
 {
 	char buf[1024];
 	int rb;
@@ -74,7 +74,7 @@ void fcopy(FILE* in, FILE* out)
 
 /*--------------------------------------------------------------------------*/
 
-void progress()
+void progress(void)
 {
 	if((verbosity > 1) && !((++pcnt)&31))
 		Verbose("%c\b","/-\\|"[((pcnt)>>5)&3]);
@@ -298,8 +298,7 @@ static void sortlump(struct lumplist **link)
  while (--i>=0);
 }
 
-
-void usage(const char* path)
+void usage(const char* path) 
 {
  printf("\nBSP v" VERSION "\n"
         "\nSee the file AUTHORS for a complete list of credits and contributors\n"

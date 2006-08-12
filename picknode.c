@@ -331,7 +331,7 @@ void ComputeIntersection(short int *outx,short int *outy)
  side checker.
 *---------------------------------------------------------------------------*/
 
-int DoLinesIntersect()
+int DoLinesIntersect(void)
 {
 	short int x,y,val = 0;
 

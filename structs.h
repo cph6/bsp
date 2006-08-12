@@ -1,6 +1,6 @@
 #include "config.h"
 
-#include <stdint.h>
+#include <inttypes.h>
 
 /*- Doom Structures .. Colin Reed 1994 -------------------------------------*/
 
