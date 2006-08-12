@@ -18,6 +18,9 @@ dos	:	$(DOCS)
 	-mkdir dos-dist
 	for fn in $(DOCS); do perl -p -e 's/$$/\r/' < $$fn > `echo dos-dist/$$fn | perl -p -e 's/(.txt)?$$/.txt/'`; done
 
-make-readme	:	index.html
-	links -dump index.html > README
+index.html	: /home/www/games/doom/bsp/index.html
+	perl -pe '((/<div id="rightmenu">/ .. /<\/div>/) or (/<div id="footer">/ .. /<\/div>/)) and $$_="";' < $< |perl -pe '$$. == 2 and print "<base href=\"http://games.moria.org.uk/doom/bsp/\" />\n"' > $@
+
+make-readme	: index.html	
+	lynx -dump index.html > README
 

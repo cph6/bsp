@@ -1,25 +1,23 @@
+#include "../../header.gtml"
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
- <head>
-  <title>BSP - The Doom Node Builder</title>
-  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
-   <rdf:Description rdf:about="" dc:creator="Colin Phipps &lt;cph@cph.demon.co.uk&gt;&quot;" dc:publisher="Colin Phipps &lt;cph@cph.demon.co.uk&gt;" dc:title="BSP home page" dc:language="en" dc:type="text"/>
-  </rdf:RDF>
- </head>
- <body>
-  <p>This is v5.1 of BSP, one of the best node builders for Doom.</p>
+#include "../../head.gtml"
+  <p>This is v5.2 of BSP, the most popular node builder for Doom.</p>
   <p>BSP is currently maintained by <a
-href="mailto:cph@cph.demon.co.uk">Colin Phipps</a>.
-Please see the <a href="http://sourceforge.net/projects/doombsp">BSP
-homepage</a> for news about BSP, the latest releases, and other resources.
-</p>
+href="mailto:cph&#64;moria.org.uk">Colin Phipps</a>.
+Please see the <a href="http://blog.moria.org.uk/games/doom/bsp">BSP
+entries in my blog</a> for news about BSP, and the latest releases. But in practice, BSP is an old and mature tool; I just update it every now and then to fix any problems compiling it for new systems.</p>
   <h2>What are Nodes?</h2>
-   <p>Doom uses a rendering algorithm based on a binary space partition,
-otherwise known as a BSP tree. This is stored in a data lump called NODES in
-the WAD file. So tools to build the BSP tree are known as node builders.</p>
    <p>Before you can play a level that you have created, you must use a node
-builder to create the data that Doom will use to render the level. BSP is one
-of several node builders that can do this.</p>
+builder to create the data that Doom will use to render the level.
+   Doom uses a rendering algorithm based on a binary space partition,
+otherwise known as a BSP tree. This is stored in a data lump called NODES in
+the WAD file. This data structure must be precalculated and stored in the WAD
+file befor the level can be played; the tool that does this is called a node
+builder.</p>
+   <p>BSP is one of several node builders that can do this. There are others:
+idbsp is the original node builder that id Software used on the original Doom
+levels, for instance. BSP was the best known and most widely used node builder
+throughout the height of the Doom editing craze in the mid 1990s.</p>
   <h2>Features</h2>
    <ul>
     <li>Fast Doom node builder.</li>
@@ -28,18 +26,17 @@ of several node builders that can do this.</p>
     <li>Includes an optional alternative algorithm for choosing the nodes which reduces the chance of visplane overflows.</li>
     <li>Optional support for compressing the blockmap.</li>
     <li>Compiles on DOS, Win32, Linux, UNIX.</li>
-    <li>Supports big endian systems.</li>
+    <li>Supports big endian &amp; 64-bit systems.</li>
    </ul>
   <h2>Getting BSP</h2>
-   <p>For Linux and UNIX systems, you can download and compile the BSP source
-    code. bsp-5.1.tar.gz contains complete source code. See the included
-    file <code>INSTALL</code> for instructions.</p>
-   <p>For DOS and Win32 systems, download bsp51.zip, which contains binaries
+   <p>For Linux and UNIX systems, you download and compile the BSP source
+    code. <a href="download/bsp-5.2.tar.gz">bsp-5.2.tar.gz</a> contains complete source code.
+See the included file <code>INSTALL</code> for instructions.</p>
+   <p>For DOS and Win32 systems, download <a href="download/bsp51.zip">bsp51.zip</a>, which contains binaries
     for DOS and Win32 (that is, Windows 95/98/NT/ME/2000/XP). bsp.exe is the 
     version for DOS (note: it requires the accompanying dos4gw.exe).
-    bsp-w32.exe is the version for Win32.</p>
-   <p>The latest version of these files can be downloaded at the 
-    <a href="http://sourceforge.net/project/showfiles.php?group_id=10283">download page</a> on the BSP site.</p>
+    bsp-w32.exe is the version for Win32. Note that I have not released BSP 5.2
+on DOS/Windows, because there were no changes in this version that would affect the DOS/Windows release.</p>
   <h2>Usage</h2>
    <code>bsp [ -noreject ] [-factor <i>nn</i> ] [ -q ] [ -picknode { traditional | visplane } ] [ -blockmap { old | comp } ] <i>inwad</i> [ [ -o ] <i>outwad</i> ] 
 </code>
@@ -93,7 +90,7 @@ straight at a wall, but it might come right at you on both sides and
 <pre>
 Node builder for DOOM levels (c) 1998 Colin Reed, Lee Killough
                              (c) 2001 Simon Howard
-                             (c) 2000,2001,2002 Colin Phipps
+                             (c) 2000,2001,2002,2006 Colin Phipps
 </pre>
   <p>
   This program is free software; you can redistribute it and/or modify it under
@@ -102,6 +99,5 @@ Foundation; either version 2 of the License, or (at your option) any later
 version. See the file COPYING for details.</p>
   <p>See the included file <code>AUTHORS</code> for a complete list of
 contributors.</p>
- </body>
-</html>
+#include "../../foot.gtml"
 
