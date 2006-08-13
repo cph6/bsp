@@ -450,7 +450,7 @@ int main(int argc,char *argv[])
   Verbose("* Doom BSP node builder ver " VERSION "\n"
 	"Copyright (c)	1998 Colin Reed, Lee Killough\n"
 	"		2001 Simon Howard\n"
-	"		2000,2001,2002 Colin Phipps <cph@cph.demon.co.uk>\n\n");
+	"		2000,2001,2002,2006 Colin Phipps <cph@moria.org.uk>\n\n");
 
  levels = OpenWadFile(testwad);		/* Opens and reads directory*/
 
