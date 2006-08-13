@@ -38,9 +38,9 @@ void Verbose(const char *errstr, ...)
    va_end( args);
 }
 
-#ifndef HAVE_LIBDMALLOC
+#ifndef WITH_DMALLOC
 /*- allocate memory with error checking ------------------------------------*/
-void *GetMemory( size_t size)
+void* GetMemory(size_t size)
 {
    void *ret = malloc( size);
    if (!ret)
@@ -50,14 +50,13 @@ void *GetMemory( size_t size)
 
 /*- reallocate memory with error checking ----------------------------------*/
 
-void *ResizeMemory( void *old, size_t size)
+void* ResizeMemory(void *old, size_t size)
 {
    void *ret = realloc( old, size);
    if (!ret)
       ProgError( "out of memory (cannot reallocate %zu bytes)", size);
    return ret;
 }
-
 
 #endif
 /*--------------------------------------------------------------------------*/

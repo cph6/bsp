@@ -69,8 +69,8 @@ void swapint(unsigned int *l);
 extern int verbosity;
 void Verbose(const char*, ...)  __attribute__((format(printf,1,2)));
 void ProgError(const char *, ...) __attribute__((format(printf,1,2), noreturn));
-void *GetMemory(size_t) __attribute__((warn_unused_result, malloc));
-void *ResizeMemory(void *, size_t) __attribute__((warn_unused_result));
+void* GetMemory(size_t) __attribute__((warn_unused_result, malloc));
+void* ResizeMemory(void *, size_t) __attribute__((warn_unused_result));
 
 /* level.c */
 
@@ -115,7 +115,7 @@ int DoLinesIntersect(void);
 void ComputeIntersection(short int *outx,short int *outy);
 
 /* malloc edbugging with dmalloc */
-#ifdef HAVE_LIBDMALLOC
+#ifdef WITH_DMALLOC
 #include <dmalloc.h>
 
 #define GetMemory malloc
