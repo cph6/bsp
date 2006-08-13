@@ -24,10 +24,10 @@ CFLAGS="$NEW_CFLAGS"
 ])
 
 CFLAGS="-O2 -fomit-frame-pointer"
-AC_C_COMPILE_FLAGS([-Wall -Wextra -ffast-math -Waggregate-return -pipe -march=native -Winline -Wwrite-strings -Wundef -Wbad-function-cast -Wcast-align -Wcast-qual -Wdeclaration-after-statement])
+AC_C_COMPILE_FLAGS([-Wall -Wextra -ffast-math -pipe -march=native -Winline -Wwrite-strings -Wundef -Wbad-function-cast -Wcast-align -Wcast-qual -Wdeclaration-after-statement])
 AC_ARG_ENABLE(debug,AC_HELP_STRING([--enable-debug],[enables debugging with gdb]),
 CFLAGS="-g"
-AC_C_COMPILE_FLAGS([-Wmissing-prototypes -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Wold-style-definition -Wformat -Wmissing-format-attribute -Wvariadic-macros -Wdisabled-optimization -Wlarger-than-128000 -Wshadow])
+AC_C_COMPILE_FLAGS([-Wmissing-prototypes -Waggregate-return -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Wold-style-definition -Wformat -Wmissing-format-attribute -Wvariadic-macros -Wdisabled-optimization -Wlarger-than-128000 -Wshadow])
 )
 AC_ARG_ENABLE(profile,AC_HELP_STRING([--enable-profile],[turns on profiling]),
 CFLAGS="-pg"

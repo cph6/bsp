@@ -42,8 +42,8 @@
 
 static FILE *outfile;
 static char *testwad;
-static char *outwad;
-char* unlinkwad;
+static const char *outwad;
+const char* unlinkwad;
 
 static struct directory *direc = NULL;
 
